@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cs175.babysactivities.RegisterActivity">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:text="Register For Your Baby"
+        android:textSize="25dp"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"
+        />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        app:srcCompat="@drawable/babyface" />
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="50dp">
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:text="Name:"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryDark" />
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:hint="Enter Your Child Name"
+            android:inputType="textCapWords"
+            android:id="@+id/edit_name"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:text="Birthday:"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryDark" />
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:textSize="20dp"
+            android:inputType="date"
+            android:hint="mm/dd/yy"
+            android:gravity="center"
+            android:id="@+id/edit_birthday"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+        <Button
+            android:id="@+id/register_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="SAVE"
+            android:textSize="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/holo_green_light"
+            android:layout_marginLeft="95dp"/>
+        <Button
+            android:id="@+id/skip_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="SKIP"
+            android:textSize="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/holo_red_light"
+            android:layout_marginLeft="20dp"/>
+
+    </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Powered By Loan Vo @ 2017"
+            android:layout_marginLeft="112dp"
+            android:layout_marginTop="90dp"
+            />
+
+
+
+
+</LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>
