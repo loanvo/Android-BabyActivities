@@ -13,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +24,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
     SensorManager sensorManager;
     Sensor sensor;
-    int temperature =0;
+    float temperature =0f;
 
     //constant to calculate temperature references at keisan.casio.com
     final static float CONSTANT1 = 5.257F;
@@ -30,6 +32,11 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
     final static float CONSTANT3 = 273.15F;
 
     private TextView tempView;
+    private Button feedButton;
+    private Button diaperButton;
+    private Button sleepButton;
+    private Button walkButton;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -73,7 +80,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         if(tempSensor != null){
             sensorManager.registerListener(this, tempSensor, sensorManager.SENSOR_DELAY_NORMAL);
         } else {
-            Toast.makeText(this, "Sensor not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Your phone doesn't support /n" + "temperature detect feature.", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -84,17 +91,39 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
            float pressure;
            float altitude;
            float sealevel;
+           double temp;
             pressure = (float) event.values[0];
             sealevel = SensorManager.PRESSURE_STANDARD_ATMOSPHERE;
             altitude = SensorManager.getAltitude(sealevel, pressure);
-            temperature = (int) Math.round((1/(1 - Math.pow(Math.E, Math.log(pressure/sealevel)/CONSTANT1)))
-                    *(CONSTANT2*altitude) - CONSTANT2*altitude - CONSTANT3);
-            tempView.setText(Double.toString(temperature));
+            temp =  Double.valueOf((1/(1 - Math.pow(Math.E, Math.log(pressure/sealevel)/CONSTANT1)))
+                   *(CONSTANT2*altitude) - CONSTANT2*altitude - CONSTANT3).floatValue();
+            temperature = Math.round(temp * 10f) / 10f; //round up 1 decimal
+            tempView.setText(Float.toString(temperature));
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    public void startFeed(View v){
+        Intent intent = new Intent(this, FeedingActivity.class);
+        startActivity(intent);
+    }
+
+    public void getDiaper(View v){
+        Intent intent = new Intent(this, DiaperActivity.class);
+        startActivity(intent);
+    }
+
+    public void startSleep(View v){
+        Intent intent = new Intent(this, SleepActivity.class);
+        startActivity(intent);
+    }
+
+    public void startWalk(View v){
+        Intent intent = new Intent(this, WalkActivity.class);
+        startActivity(intent);
     }
 }

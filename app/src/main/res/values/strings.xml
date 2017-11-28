@@ -4,4 +4,8 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_baby_activities">Baby\'s Activities</string>
+    <string name="title_activity_feeding">FEEDING</string>
+    <string name="title_activity_diaper">Diaper</string>
+    <string name="title_activity_sleep">Sleep Activity</string>
+    <string name="title_activity_walk">Walk Activity</string>
 </resources>

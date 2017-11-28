@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cs175.babysactivities">
+
     <uses-feature
         android:name="android.hardware.sensor.barometer"
-        android:required="false"></uses-feature>
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +26,35 @@
         </activity>
         <activity
             android:name=".BabyActivities"
-            android:label="@string/title_activity_baby_activities"></activity>
+            android:label="@string/title_activity_baby_activities" />
+        <activity
+            android:name=".FeedingActivity"
+            android:label="@string/title_activity_feeding"
+            android:parentActivityName=".BabyActivities" />
+        <activity
+            android:name=".DiaperActivity"
+            android:label="@string/title_activity_diaper"
+            android:parentActivityName=".BabyActivities">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cs175.babysactivities.BabyActivities" />
+        </activity>
+        <activity
+            android:name=".SleepActivity"
+            android:label="@string/title_activity_sleep"
+            android:parentActivityName=".BabyActivities">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cs175.babysactivities.BabyActivities" />
+        </activity>
+        <activity
+            android:name=".WalkActivity"
+            android:label="@string/title_activity_walk"
+            android:parentActivityName=".BabyActivities">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cs175.babysactivities.BabyActivities" />
+        </activity>
     </application>
 
 </manifest>
