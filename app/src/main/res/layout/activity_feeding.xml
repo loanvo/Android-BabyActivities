@@ -6,21 +6,213 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cs175.babysactivities.FeedingActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
 
         <TextView
-            android:id="@+id/timer_view"
-            android:layout_width="120dp"
-            android:layout_height="60dp"
-            android:text="6:20"
-            android:textSize="40dp"
-            android:textColor="@android:color/black"
-            android:background="@drawable/box"
+            android:id="@+id/name_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginVertical="@dimen/fab_margin"
-            android:textAlignment="center"/>
-        
+            android:drawableLeft="@drawable/babyface"
+            android:gravity="center"
+            android:text="Name"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="30dp" />
+        <TextView
+            android:id="@+id/feed_timer_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="@dimen/fab_margin"
+            android:drawableLeft="@drawable/timer"
+            android:gravity="center"
+            android:text="60:20"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="30dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:paddingRight="10dp"
+            android:background="@drawable/box">
+
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/colorAccent"
+                app:srcCompat="@drawable/bottle" />
+
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="Quantity:  "
+                        android:textColor="@android:color/black"
+                        android:textSize="25dp" />
+
+                    <EditText
+                        android:id="@+id/qantity_edit"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="14"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/black"
+                        android:textSize="25dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="scoops"
+                        android:textColor="@android:color/black"
+                        android:textSize="25dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <Switch
+                        android:id="@+id/start_bottle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
+                        android:background="@android:color/holo_green_light"
+                        android:gravity="center" />
+                </TableRow>
+            </TableLayout>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/fab_margin"
+                android:gravity="center"
+                android:text="Formula has"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="30dp"
+                android:layout_marginLeft="30dp"/>
+            <TextView
+                android:id="@+id/formula_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/fab_margin"
+                android:gravity="center"
+                android:text="160 "
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="30dp"
+                android:layout_marginLeft="20dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/fab_margin"
+                android:gravity="center"
+                android:text="oz left"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="30dp"
+                android:layout_marginLeft="10dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@android:color/holo_blue_light"
+                app:srcCompat="@drawable/breast" />
+
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:paddingRight="100dp"
+                android:paddingBottom="10dp"
+                android:background="@drawable/box">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="Left:  "
+                        android:textColor="@android:color/black"
+                        android:textSize="25dp" />
+                    <Switch
+                        android:id="@+id/start_breast"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_marginLeft="100dp"
+                        android:background="@android:color/holo_green_light"/>
+
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="Right:  "
+                        android:textColor="@android:color/black"
+                        android:textSize="25dp" />
+                    <Switch
+                        android:id="@+id/start_right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_marginLeft="100dp"
+                        android:background="@android:color/holo_green_light"></Switch>
+
+                </TableRow>
+            </TableLayout>
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Supplies"
+            android:layout_gravity="center"
+            android:background="@android:color/holo_green_light"
+            android:layout_marginTop="30dp"
+            android:padding="20dp"/>
+
 
     </LinearLayout>
 

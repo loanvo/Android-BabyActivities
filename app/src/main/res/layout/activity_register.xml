@@ -94,7 +94,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Powered By Loan Vo @ 2017"
+            android:text="Powered By Loan Vo @ USA 2017"
             android:layout_marginLeft="112dp"
             android:layout_marginTop="90dp"
             />
