@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:text="Baby's Information"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimary"
+                android:gravity="center"
+                />
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="Name *:"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark" />
+                <EditText
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:hint="Baby's Name"
+                    android:inputType="textCapWords"
+                    android:id="@+id/edit_name"
+                    android:background="@drawable/box"
+                    />
+                <requestFocus/>
+            </TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="Birthday: "
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark" />
+                <EditText
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:textSize="15dp"
+                    android:inputType="date"
+                    android:hint="mm/dd/yy"
+                    android:gravity="center"
+                    android:id="@+id/edit_birthday"
+                    android:background="@drawable/box"
+                    />
+            </TableRow>
+            </TableLayout>
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+               android:layout_marginTop="10dp">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="Weight:"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark" />
+                <EditText
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:textSize="15dp"
+                    android:inputType="numberDecimal"
+                    android:hint="Baby's weight"
+                    android:gravity="center"
+                    android:id="@+id/edit_weight"
+                    android:background="@drawable/box"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="lbs"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    />
+
+            </TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                >
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
+                    android:text="Height:"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark" />
+                <EditText
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:textSize="15dp"
+                    android:inputType="numberDecimal"
+                    android:hint="Baby's height"
+                    android:gravity="center"
+                    android:id="@+id/edit_height"
+                    android:background="@drawable/box"
+                  />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="inches"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_marginRight="15dp"/>
+            </TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:text="Head Size:"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark" />
+                <EditText
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:textSize="15dp"
+                    android:inputType="numberDecimal"
+                    android:hint="Baby's head size"
+                    android:gravity="center"
+                    android:id="@+id/edit_head"
+                    android:background="@drawable/box"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="inches"
+                    android:textSize="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_marginRight="15dp"/>
+            </TableRow>
+            </TableLayout>
+            <TableLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+
+                >
+                <TableRow
+                    android:layout_marginLeft="30dp">
+                <Button
+                    android:id="@+id/register_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="SAVE"
+                    android:textSize="16dp"
+                    android:background="@android:color/holo_green_light"
+
+                    />
+                <Button
+                    android:id="@+id/cancel_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="CANCEL"
+                    android:textSize="16dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_marginLeft="10dp"/>
+                </TableRow>
+
+            </TableLayout>
+
+        </LinearLayout>
+
+
+</LinearLayout>

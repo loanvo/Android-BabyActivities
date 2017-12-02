@@ -106,6 +106,10 @@
                 android:layout_gravity="center"
                 />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
         <TextView
             android:id="@+id/name_view"
             android:layout_width="wrap_content"
@@ -117,6 +121,18 @@
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="20dp" />
+            <TextView
+                android:id="@+id/age_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="5 months"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="20dp"
+                android:layout_marginLeft="10dp"/>
+        </LinearLayout>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">

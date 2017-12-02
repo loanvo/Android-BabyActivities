@@ -136,17 +136,37 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL(selectQuery);
     }
 
-    public String getBabyName(){
-        String selectQuery = "SELECT " + KEY_NAME + " FROM " + TABLE_PROFILE;
-        String name = "";
-
+    public BabyProfile getBabyInfo(){
+        String selectQuery = "SELECT * FROM " + TABLE_PROFILE;
+        BabyProfile babyProfile = new BabyProfile();
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if(cursor.moveToFirst()){
-            BabyProfile babyProfile = new BabyProfile();
-            babyProfile.setName (cursor.getString(0));
-            name = babyProfile.getName();
+            do {
+                babyProfile.setName(cursor.getString(1));
+                babyProfile.setDOB(cursor.getString(2));
+                babyProfile.setWeight(cursor.getDouble(4));
+                babyProfile.setHeight(cursor.getDouble(5));
+                babyProfile.setHeadsize(cursor.getDouble(6));
+            }while(cursor.moveToNext());
         }
-        return name;
+        return babyProfile;
+    }
+
+    public BabyProfile getBabyInfoByName(String name){
+        String selectQuery = "SELECT * FROM " + TABLE_PROFILE + " WHERE " + KEY_NAME + " = " + name;
+        BabyProfile babyProfile = new BabyProfile();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.moveToFirst()){
+            do {
+                babyProfile.setName(cursor.getString(1));
+                babyProfile.setDOB(cursor.getString(2));
+                babyProfile.setWeight(cursor.getDouble(4));
+                babyProfile.setHeight(cursor.getDouble(5));
+                babyProfile.setHeadsize(cursor.getDouble(6));
+            }while(cursor.moveToNext());
+        }
+        return babyProfile;
     }
 }
