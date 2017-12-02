@@ -1,4 +1,8 @@
+package cs175.babysactivities;
+
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -29,8 +33,8 @@ public class DBHelper extends SQLiteOpenHelper{
     // Table Breast feed
     private static final String TABLE_BREAST_FEED = "Breast_Feeding";
     private static final String BR_ID = "id";
-    private static final String KEY_LEFT_TIME = "time";
-    private static final String KEY_RIGHT_TIME = "time";
+    private static final String KEY_LEFT_TIME = "lefttime";
+    private static final String KEY_RIGHT_TIME = "righttime";
 
     // Table Diaper
     private static final String TABLE_DIAPER = "Diaper";
@@ -62,43 +66,42 @@ public class DBHelper extends SQLiteOpenHelper{
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         String querry1 = ("CREATE TABLE " + TABLE_PROFILE + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                KEY_NAME + " TEXT, " + KEY_DOB + " DATE, " + KEY_GENDER + " TEXT, "
+                KEY_NAME + " TEXT, " + KEY_DOB + " TEXT, " + KEY_GENDER + " TEXT, "
                 + KEY_WEIGHT + " DOUBLE, " + KEY_HEIGHT + " DOUBLE, "+ KEY_HEAD_SIZE +  " DOUBLE)");
         db.execSQL (querry1);
 
         String querry2 = ("CREATE TABLE " + TABLE_BOTTLE_FEED + "(" + BABY_ID + " INTEGER, " +
                 KEY_TIME + " TEXT, " + KEY_QUANTITY + " INT, " +  " FOREIGN KEY (" + BABY_ID + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_ID + ")");
+                + TABLE_PROFILE + " (" + KEY_ID + "))");
         db.execSQL (querry2);
 
         String querry3 = ("CREATE TABLE " + TABLE_BREAST_FEED + "(" + BR_ID + " INTEGER, " +
                 KEY_LEFT_TIME + " TEXT, " + KEY_RIGHT_TIME + " TEXT, " +  " FOREIGN KEY (" + BR_ID + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_ID + ")");
+                + TABLE_PROFILE + "(" + KEY_ID + "))");
         db.execSQL (querry3);
 
         String querry4 = ("CREATE TABLE " + TABLE_DIAPER + "(" + D_ID + " INTEGER, " +
                 KEY_POO + " INT, " + KEY_PEE + " INT, " + KEY_BOTH + " INT, "+  " FOREIGN KEY (" + D_ID + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_ID + ")");
+                + TABLE_PROFILE + "(" + KEY_ID + "))");
         db.execSQL (querry4);
 
         String querry5 = ("CREATE TABLE " + TABLE_SLEEP + "(" + S_ID + " INTEGER, " +
                 KEY_SLEEP_TIME + " TEXT, "  +  " FOREIGN KEY (" + S_ID + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_ID + ")");
+                + TABLE_PROFILE + "(" + KEY_ID + "))");
         db.execSQL (querry5);
 
         String querry6 = ("CREATE TABLE " + TABLE_WALK + "(" + W_ID + " INTEGER, " +
                 KEY_WALK_TIME + " TEXT, " + KEY_ORIGINAL_STEPS + " DOUBLE, " + KEY_CURRENT_STEPS + " DOUBLE, "
                 + KEY_STATUS+ " TEXT, " +  " FOREIGN KEY (" + W_ID + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_ID + ")");
+                + TABLE_PROFILE + "(" + KEY_ID + "))");
         db.execSQL (querry6);
 
         String querry7 = ("CREATE TABLE " + TABLE_SUPPLY + "(" + SU_ID + " INTEGER, " +
                 KEY_DIAPER + " INT, " + KEY_FORMULA + " INT," + KEY_DATE +  " DATE, FOREIGN KEY (" + SU_ID + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_ID + ")");
+                + TABLE_PROFILE + "(" + KEY_ID + "))");
         db.execSQL (querry7);
     }
     @Override
@@ -113,5 +116,37 @@ public class DBHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    public void createProfile(BabyProfile babyProfile){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
+        values.put(KEY_NAME, babyProfile.getName());
+        values.put(KEY_DOB, babyProfile.getDOB().toString());
+        values.put(KEY_HEIGHT, babyProfile.getHeight());
+        values.put(KEY_WEIGHT, babyProfile.getWeight());
+        values.put(KEY_HEAD_SIZE, babyProfile.getHeadSize());
+
+        db.insert(TABLE_PROFILE, null, values);
+        db.close();
+    }
+
+    public void removeBabyProfile(String name){
+        String selectQuery = "DELETE FROM " + TABLE_PROFILE + " WHERE " + KEY_NAME + " = " + "'" + name + "'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(selectQuery);
+    }
+
+    public String getBabyName(){
+        String selectQuery = "SELECT " + KEY_NAME + " FROM " + TABLE_PROFILE;
+        String name = "";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if(cursor.moveToFirst()){
+            BabyProfile babyProfile = new BabyProfile();
+            babyProfile.setName (cursor.getString(0));
+            name = babyProfile.getName();
+        }
+        return name;
+    }
 }

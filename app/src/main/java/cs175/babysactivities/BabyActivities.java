@@ -37,6 +37,11 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
     private Button sleepButton;
     private Button walkButton;
 
+    private TextView nameView;
+
+    DBHelper dbHelper;
+    String name;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -62,11 +67,15 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_baby_activities);
 
+        dbHelper = new DBHelper(this);
+
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         tempView = (TextView) findViewById(R.id.temp_view);
+        nameView = (TextView) findViewById(R.id.name_view);
+        nameView.setText(dbHelper.getBabyName());
 
         sensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
