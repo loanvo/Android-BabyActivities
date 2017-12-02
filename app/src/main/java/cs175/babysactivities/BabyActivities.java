@@ -40,7 +40,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-public class BabyActivities extends AppCompatActivity implements SensorEventListener{
+public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
 
     private TextView mTextMessage;
 
@@ -111,28 +111,10 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         sensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
-        nameView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Dialog dialog = new Dialog(BabyActivities.this);
-                dialog.setContentView(R.layout.edit_profile);
-                dialog.setTitle("Edit Baby Information");
-                TextView nameEdit = (TextView) dialog.findViewById(R.id.edit_name);
-                TextView birthdayEdit = (TextView) dialog.findViewById(R.id.edit_birthday);
-                TextView heightEdit = (TextView) dialog.findViewById(R.id.edit_height);
-                TextView weightEdit = (TextView) dialog.findViewById(R.id.edit_weight);
-                TextView headEdit = (TextView) dialog.findViewById(R.id.edit_head);
-                Button saveButton = (Button) dialog.findViewById(R.id.register_button);
-                Button cancelButton = (Button) dialog.findViewById(R.id.cancel_button);
-
-                Window window = dialog.getWindow();
-                window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                dialog.show();
-            }
-        });
+        nameView.setOnClickListener(this);
+        ageView.setOnClickListener(this);
     }
-    
+
     public String getAge(String birthday){
         String age ="";
         DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
@@ -151,6 +133,30 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
                     + String.valueOf(months) + " months " + String.valueOf(days) + " days";
         }
         return age;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Dialog dialog = new Dialog(BabyActivities.this);
+        dialog.setContentView(R.layout.edit_profile);
+        dialog.setTitle("Edit Baby Information");
+        TextView nameEdit = (TextView) dialog.findViewById(R.id.edit_name);
+        TextView birthdayEdit = (TextView) dialog.findViewById(R.id.edit_birthday);
+        TextView heightEdit = (TextView) dialog.findViewById(R.id.edit_height);
+        TextView weightEdit = (TextView) dialog.findViewById(R.id.edit_weight);
+        TextView headEdit = (TextView) dialog.findViewById(R.id.edit_head);
+        Button saveButton = (Button) dialog.findViewById(R.id.register_button);
+        Button cancelButton = (Button) dialog.findViewById(R.id.cancel_button);
+
+        Window window = dialog.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        dialog.show();
+        nameEdit.setText(babyProfile.getName());
+        birthdayEdit.setText(babyProfile.getDOB());
+        weightEdit.setText(String.valueOf(babyProfile.getWeight()));
+        heightEdit.setText(String.valueOf(babyProfile.getHeight()));
+        headEdit.setText(String.valueOf(babyProfile.getHeight()));
     }
 
     @Override
