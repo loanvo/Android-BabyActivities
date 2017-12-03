@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -106,8 +107,11 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
         String birthday = babyProfile.getDOB();
         ageView = (TextView) findViewById(R.id.age_view);
-        ageView.setText(getAge(birthday));
-
+        if(birthday != null || birthday != "") {
+            ageView.setText(getAge(birthday));
+        }else{
+            ageView.setText("Birthday haven't enter yet!");
+        }
         sensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
@@ -137,14 +141,14 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
     @Override
     public void onClick(View v) {
-        Dialog dialog = new Dialog(BabyActivities.this);
+        final Dialog dialog = new Dialog(BabyActivities.this);
         dialog.setContentView(R.layout.edit_profile);
         dialog.setTitle("Edit Baby Information");
-        TextView nameEdit = (TextView) dialog.findViewById(R.id.edit_name);
-        TextView birthdayEdit = (TextView) dialog.findViewById(R.id.edit_birthday);
-        TextView heightEdit = (TextView) dialog.findViewById(R.id.edit_height);
-        TextView weightEdit = (TextView) dialog.findViewById(R.id.edit_weight);
-        TextView headEdit = (TextView) dialog.findViewById(R.id.edit_head);
+        final EditText nameEdit = (EditText) dialog.findViewById(R.id.edit_name);
+        final EditText birthdayEdit = (EditText) dialog.findViewById(R.id.edit_birthday);
+        final EditText heightEdit = (EditText) dialog.findViewById(R.id.edit_height);
+        final EditText weightEdit = (EditText) dialog.findViewById(R.id.edit_weight);
+        final EditText headEdit = (EditText) dialog.findViewById(R.id.edit_head);
         Button saveButton = (Button) dialog.findViewById(R.id.register_button);
         Button cancelButton = (Button) dialog.findViewById(R.id.cancel_button);
 
@@ -157,6 +161,40 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         weightEdit.setText(String.valueOf(babyProfile.getWeight()));
         heightEdit.setText(String.valueOf(babyProfile.getHeight()));
         headEdit.setText(String.valueOf(babyProfile.getHeight()));
+        RegisterActivity activity = new RegisterActivity();
+        activity.setCalendar(birthdayEdit, this);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            String name = "";
+            String birth = "";
+            double w = 0.0;
+            double h = 0.0;
+            double head = 0.0;
+            @Override
+            public void onClick(View v) {
+                name = nameEdit.getText().toString();
+                birth = birthdayEdit.getText().toString();
+                w = Double.parseDouble(weightEdit.getText().toString());
+                h = Double.parseDouble(heightEdit.getText().toString());
+                head = Double.parseDouble(headEdit.getText().toString());
+                saveProfile(name, birth, w, h, head);
+                dialog.dismiss();
+            }
+        });
+    }
+
+    public void saveProfile(String n, String d, double w, double h, double head){
+       babyProfile = dbHelper.getBabyInfo();
+       if(n.equals(babyProfile.getName())){
+           dbHelper.removeBabyProfile(n);
+       }
+       babyProfile.setName(n);
+       babyProfile.setDOB(d);
+       babyProfile.setWeight(w);
+       babyProfile.setHeight(h);
+       babyProfile.setHeadsize(head);
+       dbHelper.createProfile(babyProfile);
+       nameView.setText(n);
+       ageView.setText(getAge(d));
     }
 
     @Override

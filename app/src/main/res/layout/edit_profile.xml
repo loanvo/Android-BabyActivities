@@ -62,6 +62,9 @@
                     android:gravity="center"
                     android:id="@+id/edit_birthday"
                     android:background="@drawable/box"
+                    android:focusable="false"
+                    android:editable="false"
+                    android:clickable="true"
                     />
             </TableRow>
             </TableLayout>

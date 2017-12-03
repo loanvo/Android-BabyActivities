@@ -1,6 +1,8 @@
 package cs175.babysactivities;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,11 +10,16 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener{
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText nameEdit;
     private EditText birthdayEdit;
@@ -67,7 +74,39 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
+        setCalendar(birthdayEdit, this);
+
     }
+
+    public void setCalendar(final EditText editText, final Context context){
+        final Calendar calendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String format = "MM/dd/yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
+                editText.setText(sdf.format(calendar.getTime()));
+            }
+        };
+
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(context, date, calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+/*
+    private void updateLabel(Calendar myCalendar){
+        String format = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
+        birthdayEdit.setText(sdf.format(myCalendar.getTime()));
+    }*/
+
 
     @Override
     public void onClick(View v) {
@@ -75,18 +114,24 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         babyProfile.setName(name);
 
         DOB = birthdayEdit.getText().toString();
-        babyProfile.setDOB(DOB);
+        if(DOB.isEmpty()){
+            babyProfile.setDOB("");
+        }else babyProfile.setDOB(DOB);
 
         String h = heightEdit.getText().toString();
         if(h.isEmpty()){
             babyProfile.setHeight(0.0);
-        }else height = Double.parseDouble(h);
-
+        }else {
+            height = Double.parseDouble(h);
+            babyProfile.setHeight(height);
+        }
         String w = weightEdit.getText().toString();
         if(w.isEmpty()){
             babyProfile.setWeight(0.0);
-        }else weight = Double.parseDouble(w);
-
+        }else {
+            weight = Double.parseDouble(w);
+            babyProfile.setWeight(weight);
+        }
         babyProfile.setHeadsize(0.0);
         if(editMode){
             dbHelper.removeBabyProfile(name);

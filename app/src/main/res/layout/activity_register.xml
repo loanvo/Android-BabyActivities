@@ -56,7 +56,7 @@
             android:layout_width="120dp"
             android:layout_height="50dp"
             android:layout_marginLeft="20dp"
-            android:text="Birthday:"
+            android:text="Birthday *:"
             android:textSize="20dp"
             android:gravity="center"
             android:textColor="@color/colorPrimaryDark" />
@@ -64,10 +64,13 @@
             android:layout_width="fill_parent"
             android:layout_height="50dp"
             android:textSize="20dp"
-            android:inputType="date"
-            android:hint="mm/dd/yy"
+            android:hint="mm/dd/yyyy"
             android:gravity="center"
-            android:id="@+id/edit_birthday"/>
+            android:focusable="false"
+            android:clickable="true"
+            android:editable="false"
+            android:id="@+id/edit_birthday"
+            />
     </LinearLayout>
     <LinearLayout
         android:layout_height="wrap_content"
