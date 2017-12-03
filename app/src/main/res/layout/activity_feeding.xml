@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginVertical="@dimen/fab_margin"
+            android:layout_marginVertical="5dp"
             android:drawableLeft="@drawable/babyface"
             android:gravity="center"
             android:text="Name"
@@ -30,8 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginVertical="@dimen/fab_margin"
             android:drawableLeft="@drawable/timer"
+            android:layout_marginVertical="5dp"
             android:gravity="center"
             android:text="60:20"
             android:textAlignment="center"
@@ -90,7 +90,7 @@
                 <TableRow>
 
                     <Switch
-                        android:id="@+id/start_bottle"
+                        android:id="@+id/switch_bottle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="100dp"
@@ -132,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginVertical="@dimen/fab_margin"
+                android:layout_marginVertical="5dp"
                 android:gravity="center"
                 android:text="oz left"
                 android:textAlignment="center"
@@ -143,7 +143,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
 
@@ -171,7 +171,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="25dp" />
                     <Switch
-                        android:id="@+id/start_breast"
+                        android:id="@+id/switch_left"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -190,7 +190,7 @@
                         android:textColor="@android:color/black"
                         android:textSize="25dp" />
                     <Switch
-                        android:id="@+id/start_right"
+                        android:id="@+id/switch_right"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -202,6 +202,15 @@
 
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </ListView>
+        </LinearLayout>
 
         <Button
             android:id="@+id/button"
@@ -210,7 +219,7 @@
             android:text="Add Supplies"
             android:layout_gravity="center"
             android:background="@android:color/holo_green_light"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:padding="20dp"/>
 
 
