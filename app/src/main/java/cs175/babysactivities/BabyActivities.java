@@ -32,14 +32,17 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
+import org.joda.time.Period;
 import org.joda.time.Years;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.text.ParseException;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
 
@@ -123,19 +126,23 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         String age ="";
         DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
         LocalDate dt = formatter.parseLocalDate(birthday);
-        int years = Years.yearsBetween(dt, LocalDate.now()).getYears();
-        int months = Months.monthsBetween(dt, LocalDate.now()).getMonths();
         int days = Days.daysBetween(dt, LocalDate.now()).getDays();
-        if(years <1 ){
-            if(months < 1) {
-                age = String.valueOf(days) + " days";
-            }else {
-                age = String.valueOf(months) + " months " + String.valueOf(days) + " days";
-            }
+        int month = dt.getMonthOfYear();
+        int months;
+        if(month == 1){
+            months = days/28;
+        }else if(month % 2 == 0){
+            months = days/30;
         }else {
-            age = String.valueOf(years) + " years "
-                    + String.valueOf(months) + " months " + String.valueOf(days) + " days";
+            months = days / 31;
         }
+        int years = months/12;
+
+        months = months %12;
+        days = days %365;
+
+        age = "is " + years + " years " + months + " months " + days + " days old";
+
         return age;
     }
 
