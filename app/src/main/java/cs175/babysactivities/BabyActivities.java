@@ -37,6 +37,7 @@ import org.joda.time.Years;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import java.util.Calendar;
@@ -104,17 +105,13 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         tempView = (TextView) findViewById(R.id.temp_view);
 
         babyProfile = dbHelper.getBabyInfo();
-
+        Log.d("pro=======", babyProfile.toString());
         nameView = (TextView) findViewById(R.id.name_view);
         nameView.setText(babyProfile.getName());
 
         String birthday = babyProfile.getDOB();
         ageView = (TextView) findViewById(R.id.age_view);
-        if(birthday != null || birthday != "") {
-            ageView.setText(getAge(birthday));
-        }else{
-            ageView.setText("Birthday haven't enter yet!");
-        }
+        ageView.setText(getAge(birthday));
         sensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
@@ -124,25 +121,34 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
     public String getAge(String birthday){
         String age ="";
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
-        LocalDate dt = formatter.parseLocalDate(birthday);
-        int days = Days.daysBetween(dt, LocalDate.now()).getDays();
-        int month = dt.getMonthOfYear();
-        int months;
-        if(month == 1){
-            months = days/28;
-        }else if(month % 2 == 0){
-            months = days/30;
-        }else {
-            months = days / 31;
+        if(birthday != null){
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
+            LocalDate dt = formatter.parseLocalDate(birthday);
+            int days = Days.daysBetween(dt, LocalDate.now()).getDays();
+            int month = dt.getMonthOfYear();
+            int months;
+            if (month == 1) {
+                months = days / 28;
+            } else if (month % 2 == 0) {
+                months = days / 30;
+            } else {
+                months = days / 31;
+            }
+            int years = months / 12;
+            months = months % 12;
+            days = days % 365;
+            if(years < 1){
+                if(months <1){
+                    age = "is " + days + " days old";
+                }else{
+                    age = "is " + months + " months "+ days + " days old";
+                }
+            }else {
+                age = "is " + years + " years " + months + " months " + days + " days old";
+            }
+        }else{
+            age = "not provide birthday";
         }
-        int years = months/12;
-
-        months = months %12;
-        days = days %365;
-
-        age = "is " + years + " years " + months + " months " + days + " days old";
-
         return age;
     }
 
@@ -162,14 +168,16 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         Window window = dialog.getWindow();
         window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        dialog.show();
+
         nameEdit.setText(babyProfile.getName());
         birthdayEdit.setText(babyProfile.getDOB());
         weightEdit.setText(String.valueOf(babyProfile.getWeight()));
         heightEdit.setText(String.valueOf(babyProfile.getHeight()));
         headEdit.setText(String.valueOf(babyProfile.getHeight()));
+
         RegisterActivity activity = new RegisterActivity();
         activity.setCalendar(birthdayEdit, this);
+        dialog.show();
         saveButton.setOnClickListener(new View.OnClickListener() {
             String name = "";
             String birth = "";
@@ -191,14 +199,16 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
     public void saveProfile(String n, String d, double w, double h, double head){
        babyProfile = dbHelper.getBabyInfo();
-       if(n.equals(babyProfile.getName())){
+       /*if(n.equals(babyProfile.getName())){
            dbHelper.removeBabyProfile(n);
-       }
+       }*/
+       dbHelper.removeBabyProfile(babyProfile.getName());
        babyProfile.setName(n);
        babyProfile.setDOB(d);
        babyProfile.setWeight(w);
        babyProfile.setHeight(h);
        babyProfile.setHeadsize(head);
+
        dbHelper.createProfile(babyProfile);
        nameView.setText(n);
        ageView.setText(getAge(d));

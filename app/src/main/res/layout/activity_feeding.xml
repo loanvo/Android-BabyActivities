@@ -33,7 +33,7 @@
             android:drawableLeft="@drawable/timer"
             android:layout_marginVertical="5dp"
             android:gravity="center"
-            android:text="60:20"
+            android:text="00:00"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="30dp" />
@@ -73,7 +73,7 @@
                         android:id="@+id/qantity_edit"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:text="14"
+                        android:text="4"
                         android:textAlignment="center"
                         android:textColor="@android:color/black"
                         android:textSize="25dp" />
@@ -123,7 +123,7 @@
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/fab_margin"
                 android:gravity="center"
-                android:text="160 "
+                android:text="0"
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="30dp"
@@ -207,7 +207,8 @@
             android:layout_height="wrap_content">
         <ListView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/feeding_logs">
 
         </ListView>
         </LinearLayout>
