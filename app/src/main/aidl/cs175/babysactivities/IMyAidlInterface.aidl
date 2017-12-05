@@ -8,5 +8,6 @@ interface IMyAidlInterface {
      * Demonstrates some basic types that you can use as parameters
      * and return values in AIDL.
      */
-    void onCheckedChanged(CompoundButton buttonView, boolean isChecked);
+     void clockRunning();
 }
+

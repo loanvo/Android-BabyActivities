@@ -60,8 +60,7 @@
             android:name=".MyService"
             android:enabled="true"
             android:exported="true"
-            android:process=":anotherProc" />
-
+            android:process=":anotherProc"></service>
     </application>
 
 </manifest>
