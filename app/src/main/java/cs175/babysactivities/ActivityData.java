@@ -11,6 +11,10 @@ public class ActivityData {
     private long sleepTime;
     private long walkTime;
     private int quanity;
+    private String startType;
+    private String stopType;
+    private String start;
+    private String stop;
 
     public void setBottleTime(long bottleTime){
         this.bottleTime = bottleTime;
@@ -30,9 +34,20 @@ public class ActivityData {
     public void setQuanity(int quantity){
         this.quanity = quantity;
     }
-
+    public void setStartType(String startType){
+        this.startType = startType;
+    }
+    public void setStopType(String stopType){
+        this.stopType = stopType;
+    }
     public int getQuanity() {
         return quanity;
+    }
+    public void setStart(String start){
+        this.start = start;
+    }
+    public void setStop(String stop){
+        this.stop = stop;
     }
 
     public long getBottleTime() {
@@ -53,5 +68,21 @@ public class ActivityData {
 
     public long getWalkTime() {
         return walkTime;
+    }
+
+    public String getStartType() {
+        return startType;
+    }
+
+    public String getStopType() {
+        return stopType;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+    public String getStop() {
+        return stop;
     }
 }

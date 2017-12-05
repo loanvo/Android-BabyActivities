@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 
 public class DBHelper extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "BabyActivities";
 
     // Table Profile
@@ -26,10 +26,11 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String KEY_HEAD_SIZE = "head_size";
 
     //Table Bottle Feed
-    private static final String TABLE_BOTTLE_FEED = "Bottle_Feeding";
+    private static final String TABLE_BOTTLE_FEED="bottle_feeding";
     private static final String B_NAME = "name";
     private static final String KEY_TIME = "time";
     private static final String KEY_QUANTITY= "quantity";
+
 
     // Table Breast feed
     private static final String TABLE_BREAST_FEED = "Breast_Feeding";
@@ -63,6 +64,14 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String KEY_DIAPER = "diaper";
     private static final String KEY_FORMULA = "formula";
     private static final String KEY_DATE = "date";
+
+    // Table activity tracker
+    private static final String TABLE_TRACKER = "tracker";
+    private static final String TR_NAME = "name";
+    private static final String START_TYPE = "start_type";
+    private static final String STOP_TYPE = "stop_type";
+    private static final String START_TIME = "start";
+    private static final String STOP_TIME = "stop";
 
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -104,6 +113,11 @@ public class DBHelper extends SQLiteOpenHelper{
                 KEY_DIAPER + " INT, " + KEY_FORMULA + " INT," + KEY_DATE +  " DATE, FOREIGN KEY (" + SU_NAME + ") REFERENCES "
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry7);
+
+        String querry8 = ("CREATE TABLE " + TABLE_TRACKER + "(" + TR_NAME + " TEXT, " +
+                START_TYPE + " TEXT, " + START_TIME + " TEXT," + STOP_TYPE +" TEXT, " + STOP_TIME +
+                " TEXT, FOREIGN KEY (" + SU_NAME + ") REFERENCES " + TABLE_PROFILE + "(" + KEY_NAME + "))");
+        db.execSQL (querry8);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int version1, int version2) {
@@ -114,6 +128,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SLEEP);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WALK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPPLY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRACKER);
         onCreate(db);
     }
 
@@ -130,6 +145,8 @@ public class DBHelper extends SQLiteOpenHelper{
         db.insert(TABLE_PROFILE, null, values);
         db.close();
     }
+
+
 
     public void removeBabyProfile(String name){
         String selectQuery = "DELETE FROM " + TABLE_PROFILE + " WHERE " + KEY_NAME + " = " + "'" + name + "'";
@@ -192,6 +209,35 @@ public class DBHelper extends SQLiteOpenHelper{
         values.put(KEY_QUANTITY, data.getQuanity());
         db.insert(TABLE_BOTTLE_FEED, null, values);
         db.close();
+    }
+
+    public void insertStatus(ActivityData data, String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(B_NAME, name);
+        values.put(START_TYPE, data.getStartType());
+        values.put(START_TIME, data.getStart());
+        values.put(STOP_TYPE, data.getStopType());
+        values.put(STOP_TIME, data.getStop());
+
+        db.insert(TABLE_TRACKER, null, values);
+        db.close();
+    }
+
+    public ActivityData getStatus(){
+        ActivityData data = new ActivityData();
+        String query = "SELECT " + START_TYPE + " , " + START_TIME + " FROM " + TABLE_TRACKER;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                do {
+                    data.setStartType(cursor.getString(0));
+                    data.setStart(cursor.getString(1));
+                } while (cursor.moveToNext());
+            }
+        }
+        return data;
     }
 
     public ArrayList<ActivityData> getBottleFeed(){

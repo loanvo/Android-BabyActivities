@@ -24,7 +24,9 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,22 +56,14 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
     String name;
     ArrayList<ActivityData> dataList;
     private String current;
+    private long stopTime;
     LinkedList<String> mLogs;
-    IMyAidlInterface remoteService;
-    RemoteConnection remoteConnection = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feeding);
 
-        //Initialize the service
-        remoteConnection = new RemoteConnection();
-        Intent intent = new Intent();
-        intent.setClassName("cs175.babysactivities", cs175.babysactivities.MyService.class.getName());
-        if (!bindService(intent, remoteConnection, BIND_AUTO_CREATE)) {
-            Toast.makeText(this, "Fail to bind the remote service ", Toast.LENGTH_LONG).show();
-        }
         data = new ActivityData();
         dataList = new ArrayList<>();
         mLogs = new LinkedList<>();
@@ -88,26 +82,19 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
         bottleSwitch.setOnCheckedChangeListener(this);
         leftSwitch.setOnCheckedChangeListener(this);
         rightSwitch.setOnCheckedChangeListener(this);
-    }
-     class RemoteConnection implements ServiceConnection {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            remoteService = IMyAidlInterface.Stub.asInterface((IBinder) service);
-            Toast.makeText(FeedingActivity.this, "Remote Service connected.", Toast.LENGTH_LONG).show();
-        }
 
-       @Override
-        public void onServiceDisconnected(ComponentName name) {
-            remoteService = null;
-            Toast.makeText(FeedingActivity.this, "Remote Service Disconnected", Toast.LENGTH_LONG).show();
+        data = dbHelper.getStatus();
+        if(data.getStartType().equals("bottle")){
+           time = SystemClock.uptimeMillis() - Long.parseLong(data.getStart());
+            //setTime(cont);
+            bottleSwitch.setChecked(true);
+
+
+            leftSwitch.setClickable(false);
+            rightSwitch.setClickable(false);
         }
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbindService(remoteConnection);
-        remoteConnection = null;
-    }
+
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -116,19 +103,20 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                 if (bottleSwitch.isChecked()) {
                     //get the real time when start feeding
                     current = getCurrentTime();
-                    try {
-                        clockRunning();
-                        throw new RemoteException();
-                    }catch (RemoteException e){
-                        e.printStackTrace();
-                    }
-
+                    start = SystemClock.uptimeMillis();
+                    handler.postDelayed(runnable, 0);
                     //start = SystemClock.uptimeMillis();
                     //handler.postDelayed(runnable, 0);
                     leftSwitch.setClickable(false);
                     rightSwitch.setClickable(false);
+                    data.setStartType("bottle");
+                    data.setStart(String.valueOf(start));
+                    dbHelper.insertStatus(data,name);
                 } else {
-
+                    stopTime = SystemClock.uptimeMillis();
+                    data.setStop(String.valueOf(stopTime));
+                    data.setStopType("bottle");
+                    dbHelper.insertStatus(data, name);
                     leftSwitch.setClickable(true);
                     bottleSwitch.setClickable(true);
                     rightSwitch.setClickable(true);
@@ -151,6 +139,8 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                 if (leftSwitch.isChecked()) {
                     //get the real time when start feeding
                     current = getCurrentTime();
+                    //start = SystemClock.uptimeMillis();
+                   // handler.postDelayed(runnable, 0);
                     clockRunning();
                     bottleSwitch.setClickable(false);
                     rightSwitch.setClickable(false);
@@ -200,34 +190,11 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                 }
                 break;
         }
-        /*
-        if(bottleSwitch.isChecked() || leftSwitch.isChecked() || rightSwitch.isChecked()){
-            if(bottleSwitch.isChecked()){
-                leftSwitch.setClickable(false);
-                rightSwitch.setClickable(false);
-                handler.removeCallbacks(runnable);
-            }else if(leftSwitch.isChecked()){
-                bottleSwitch.setClickable(false);
-                rightSwitch.setClickable(false);
-                handler.removeCallbacks(runnable);
-            }else if(rightSwitch.isChecked()){
-                leftSwitch.setClickable(false);
-                bottleSwitch.setClickable(false);
-                handler.removeCallbacks(runnable);
-            }
-            start = SystemClock.uptimeMillis();
-            handler.postDelayed(runnable, 0);
-        }else{
-            leftSwitch.setClickable(true);
-            bottleSwitch.setClickable(true);
-            rightSwitch.setClickable(true);
-            timeBuff += time;
-            handler.removeCallbacks(runnable);
-        }*/
+
     }
     public void clockRunning(){
-        start = SystemClock.uptimeMillis();
-        handler.postDelayed(runnable, 0);
+      start =SystemClock.uptimeMillis();
+      handler.postDelayed(runnable, 0);
     }
     public String getCurrentTime(){
         String current = "";
@@ -279,30 +246,23 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
         @Override
         public void run() {
             time = SystemClock.uptimeMillis() - start;
+            setTime(time);
 
-            seconds = (int) (time / 1000);
-            minutes = seconds / 60;
-            hours = minutes/60;
-            seconds = seconds % 60;
-            minutes = minutes % 60;
-            hours = hours % 24;
  //           time = (int) (time % 1000);
-            timeView.setText("" +  String.format("%02d", hours) + ":"
-                    + String.format("%02d", minutes) + ":"
-                    + String.format("%02d", seconds));
 
             handler.postDelayed(this, 0);
         }
     };
+    public void setTime(long time){
+        seconds = (int) (time / 1000);
+        minutes = seconds / 60;
+        hours = minutes/60;
+        seconds = seconds % 60;
+        minutes = minutes % 60;
+        hours = hours % 24;
+        timeView.setText("" +  String.format("%02d", hours) + ":"
+                + String.format("%02d", minutes) + ":"
+                + String.format("%02d", seconds));
 
-    public void runningService(){
-        try{
-            clockRunning();
-            setLogView();
-            throw new RemoteException("no Remote Service found");
-        }catch (RemoteException e){
-            e.printStackTrace();
-        }
     }
-
 }
