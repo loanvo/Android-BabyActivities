@@ -30,7 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:drawableLeft="@drawable/timer"
             android:layout_marginVertical="5dp"
             android:gravity="center"
             android:text="00:00"
@@ -204,11 +203,19 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feeding Log:"
+                android:textColor="@color/colorAccent"
+                android:layout_margin="10dp"/>
         <ListView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/feeding_logs">
+            android:layout_height="200dp"
+            android:id="@+id/feeding_logs"
+            >
 
         </ListView>
         </LinearLayout>

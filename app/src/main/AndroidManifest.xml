@@ -55,6 +55,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cs175.babysactivities.BabyActivities" />
         </activity>
+
+        <service
+            android:name=".MyService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":anotherProc" />
+
     </application>
 
 </manifest>

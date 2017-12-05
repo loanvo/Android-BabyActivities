@@ -22,12 +22,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.LogRecord;
 
 public class FeedingActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
 
     TextView timeView;
+    TextView nameView;
     Switch bottleSwitch;
     Switch leftSwitch;
     Switch rightSwitch;
@@ -45,6 +47,7 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
     String name;
     ArrayList<ActivityData> dataList;
     private String current;
+    LinkedList<String> mLogs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,16 +55,19 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
 
         data = new ActivityData();
         dataList = new ArrayList<>();
+        mLogs = new LinkedList<>();
         dbHelper = new DBHelper(this);
         name = dbHelper.getBabyName();
         handler = new Handler();
         timeView = (TextView) findViewById(R.id.feed_timer_view);
+        nameView = (TextView) findViewById(R.id.name_view);
         bottleSwitch = (Switch) findViewById(R.id.switch_bottle);
         quantityEdit = (EditText) findViewById(R.id.qantity_edit);
         leftSwitch = (Switch) findViewById(R.id.switch_left);
         rightSwitch = (Switch) findViewById(R.id.switch_right);
         feedingLog = (ListView) findViewById(R.id.feeding_logs);
 
+        nameView.setText(name);
         bottleSwitch.setOnCheckedChangeListener(this);
         leftSwitch.setOnCheckedChangeListener(this);
         rightSwitch.setOnCheckedChangeListener(this);
@@ -88,9 +94,12 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                         data.setQuanity(0);
                     } else data.setQuanity(Integer.parseInt(quan));
                     data.setBottleTime(time);
+                    String timeString = formatTimeView(time);
+                    String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
+                    mLogs.addFirst(bottleLog);
                     dbHelper.insertBottleFeedTime(data, name);
-                    dataList = dbHelper.getBottleFeed();
-                    setLogView(dataList, start);
+                   // dataList = dbHelper.getBottleFeed();
+                    setLogView();
                     handler.removeCallbacks(runnable);
                     time = 0;
                 }
@@ -112,8 +121,37 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                     data.setLeftTime(time);
                     data.setRightTime(0);
                     dbHelper.insertBreastFeedTime(data, name);
-                    dataList = dbHelper.getBreastFeed();
-                    setLogView(dataList,start);
+                    //dataList = dbHelper.getBreastFeed();
+                    String timeString = formatTimeView(time);
+                    String leftLog = "Left fed for " + timeString + " at " + current;
+                    mLogs.addFirst(leftLog);
+                    setLogView();
+                    handler.removeCallbacks(runnable);
+                    time = 0;
+                }
+                break;
+            case R.id.switch_right:
+                if (rightSwitch.isChecked()) {
+                    //get the real time when start feeding
+                    current = getCurrentTime();
+                    start = SystemClock.uptimeMillis();
+                    handler.postDelayed(runnable, 0);
+                    bottleSwitch.setClickable(false);
+                    leftSwitch.setClickable(false);
+                } else {
+
+                    leftSwitch.setClickable(true);
+                    bottleSwitch.setClickable(true);
+                    rightSwitch.setClickable(true);
+
+                    data.setRightTime(time);
+                    data.setLeftTime(0);
+                    dbHelper.insertBreastFeedTime(data, name);
+                    //dataList = dbHelper.getBreastFeed();
+                    String timeString = formatTimeView(time);
+                    String leftLog = "Right fed for " + timeString + " at " + current;
+                    mLogs.addFirst(leftLog);
+                    setLogView();
                     handler.removeCallbacks(runnable);
                     time = 0;
                 }
@@ -152,18 +190,9 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                 + String.valueOf(dateTime.getMinuteOfHour());
         return current;
     }
-    public void setLogView(ArrayList<ActivityData> dataList, long start){
-        List<String> bottleLogs = new ArrayList<>();
-        for(int i =0; i<dataList.size(); i++){
-            long time = dataList.get(i).getBottleTime();
-            int quantity = dataList.get(i).getQuanity();
+    public void setLogView(){
 
-            //convert time of feeding in millis to hh:mm:ss
-            String timeView = formatTimeView(time);
-
-            bottleLogs.add(" fed " + quantity + " oz formula milk for " + timeView + " at " + current );
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, bottleLogs);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mLogs);
         feedingLog.setAdapter(arrayAdapter);
         feedingLog.setTextFilterEnabled(true);
 
