@@ -58,6 +58,8 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
     private String current;
     private long stopTime;
     LinkedList<String> mLogs;
+    long continued = 0;
+    boolean started = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,14 +86,29 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
         rightSwitch.setOnCheckedChangeListener(this);
 
         data = dbHelper.getStatus();
-        if(data.getStartType().equals("bottle")){
-           time = SystemClock.uptimeMillis() - Long.parseLong(data.getStart());
-            //setTime(cont);
-            bottleSwitch.setChecked(true);
-
-
-            leftSwitch.setClickable(false);
-            rightSwitch.setClickable(false);
+        if(data.getStartType() != null) {
+            if (data.getStartType().equals("bottle")) {
+                continued = Long.parseLong(data.getStart());
+                started = true;
+                //setTime(cont);
+                bottleSwitch.setChecked(true);
+                // leftSwitch.setClickable(false);
+                // rightSwitch.setClickable(false);
+            } else if (data.getStartType().equals("left")) {
+                continued = Long.parseLong(data.getStart());
+                started = true;
+                leftSwitch.setChecked(true);
+            } else if (data.getStartType().equals("right")) {
+                continued = Long.parseLong(data.getStart());
+                rightSwitch.setChecked(true);
+                started = true;
+            } else {
+                continued = 0;
+                started = false;
+            }
+        }else{
+            continued =0;
+            started =false;
         }
     }
 
@@ -101,25 +118,29 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
         switch (buttonView.getId()) {
             case R.id.switch_bottle:
                 if (bottleSwitch.isChecked()) {
+
                     //get the real time when start feeding
                     current = getCurrentTime();
-                    start = SystemClock.uptimeMillis();
-                    handler.postDelayed(runnable, 0);
-                    //start = SystemClock.uptimeMillis();
-                    //handler.postDelayed(runnable, 0);
+                    clockRunning();
+
                     leftSwitch.setClickable(false);
                     rightSwitch.setClickable(false);
+                    if(data.getStartType() != null && data.getStartType().equals("bottle")){
+                        dbHelper.removeStatus(data.getStartType());
+                    }
                     data.setStartType("bottle");
                     data.setStart(String.valueOf(start));
                     dbHelper.insertStatus(data,name);
                 } else {
-                    stopTime = SystemClock.uptimeMillis();
-                    data.setStop(String.valueOf(stopTime));
-                    data.setStopType("bottle");
-                    dbHelper.insertStatus(data, name);
                     leftSwitch.setClickable(true);
                     bottleSwitch.setClickable(true);
                     rightSwitch.setClickable(true);
+
+                    stopTime = SystemClock.uptimeMillis();
+                    data.setStop(String.valueOf(stopTime));
+                    data.setStopType("bottle");
+                    dbHelper.updateStatus("bottle",data, name);
+
                     String quan = quantityEdit.getText().toString();
                     if (quan.isEmpty()) {
                         data.setQuanity(0);
@@ -138,9 +159,14 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
             case R.id.switch_left:
                 if (leftSwitch.isChecked()) {
                     //get the real time when start feeding
+                    if(data.getStartType() != null &&data.getStartType().equals("left")){
+                        dbHelper.removeStatus(data.getStartType());
+                    }
+                    data.setStartType("left");
+                    data.setStart(String.valueOf(start));
+                    dbHelper.insertStatus(data,name);
+
                     current = getCurrentTime();
-                    //start = SystemClock.uptimeMillis();
-                   // handler.postDelayed(runnable, 0);
                     clockRunning();
                     bottleSwitch.setClickable(false);
                     rightSwitch.setClickable(false);
@@ -149,6 +175,11 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                     leftSwitch.setClickable(true);
                     bottleSwitch.setClickable(true);
                     rightSwitch.setClickable(true);
+
+                    stopTime = SystemClock.uptimeMillis();
+                    data.setStop(String.valueOf(stopTime));
+                    data.setStopType("left");
+                    dbHelper.updateStatus("left",data, name);
 
                     data.setLeftTime(time);
                     data.setRightTime(0);
@@ -166,9 +197,13 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                 if (rightSwitch.isChecked()) {
                     //get the real time when start feeding
                     current = getCurrentTime();
+                    if(data.getStartType() != null &&data.getStartType().equals("right")){
+                        dbHelper.removeStatus(data.getStartType());
+                    }
+                    data.setStartType("right");
+                    data.setStart(String.valueOf(start));
+                    dbHelper.insertStatus(data,name);
                     clockRunning();
-                    //start = SystemClock.uptimeMillis();
-                    //handler.postDelayed(runnable, 0);
                     bottleSwitch.setClickable(false);
                     leftSwitch.setClickable(false);
                 } else {
@@ -176,6 +211,11 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                     leftSwitch.setClickable(true);
                     bottleSwitch.setClickable(true);
                     rightSwitch.setClickable(true);
+
+                    stopTime = SystemClock.uptimeMillis();
+                    data.setStop(String.valueOf(stopTime));
+                    data.setStopType("right");
+                    dbHelper.updateStatus("right", data, name);
 
                     data.setRightTime(time);
                     data.setLeftTime(0);
@@ -192,8 +232,15 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
         }
 
     }
+
+
+
     public void clockRunning(){
-      start =SystemClock.uptimeMillis();
+        if(started==true) {
+            start = continued;
+        }else{
+            start = SystemClock.uptimeMillis();
+        }
       handler.postDelayed(runnable, 0);
     }
     public String getCurrentTime(){

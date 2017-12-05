@@ -224,6 +224,25 @@ public class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void updateStatus(String startType, ActivityData data, String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_NAME, name);
+        values.put(STOP_TYPE, data.getStopType());
+        values.put(STOP_TIME, data.getStop().toString());
+
+        db.update(TABLE_TRACKER, values, START_TYPE + "=?", new String[]{startType});
+
+        db.close();
+    }
+
+    public void removeStatus(String type){
+        String query = "DELETE " + START_TYPE + " FROM " + TABLE_TRACKER + " WHERE " + START_TYPE + " = " + "'" + type +"'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(query);
+    }
+
     public ActivityData getStatus(){
         ActivityData data = new ActivityData();
         String query = "SELECT " + START_TYPE + " , " + START_TIME + " FROM " + TABLE_TRACKER;
@@ -239,6 +258,8 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return data;
     }
+
+
 
     public ArrayList<ActivityData> getBottleFeed(){
         ActivityData data = new ActivityData();
