@@ -6,15 +6,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Loan Vo on 11/30/17.
  */
 
 public class DBHelper extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "BabyActivities";
 
     // Table Profile
@@ -42,9 +46,8 @@ public class DBHelper extends SQLiteOpenHelper{
     // Table Diaper
     private static final String TABLE_DIAPER = "Diaper";
     private static final String D_NAME = "name";
-    private static final String KEY_POO = "poo";
-    private static final String KEY_PEE = "pee";
-    private static final String KEY_BOTH = "both";
+    private static final String KEY_TYPE = "type";
+
 
     // Table Sleep
     private static final String TABLE_SLEEP = "Sleep";
@@ -102,7 +105,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL (querry3);
 
         String querry4 = ("CREATE TABLE " + TABLE_DIAPER + "(" + D_NAME + " TEXT, " +
-                KEY_POO + " INT, " + KEY_PEE + " INT, " + KEY_BOTH + " INT, "+  " FOREIGN KEY (" + D_NAME + ") REFERENCES "
+                KEY_TYPE + " TEXT, "+  " FOREIGN KEY (" + D_NAME + ") REFERENCES "
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry4);
 
@@ -117,9 +120,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry6);
 
-        String querry7 = ("CREATE TABLE " + TABLE_SUPPLY + "(" + SU_NAME + " TEXT, " +
-                KEY_DIAPER + " INT, " + KEY_FORMULA + " INT," + KEY_DATE +  " DATE, FOREIGN KEY (" + SU_NAME + ") REFERENCES "
-                + TABLE_PROFILE + "(" + KEY_NAME + "))");
+        String querry7 = ("CREATE TABLE " + TABLE_SUPPLY + "("
+                + KEY_DIAPER + " INT, " + KEY_FORMULA + " INT, " + KEY_DATE +  " TEXT" +  ")");
         db.execSQL (querry7);
 
         String querry8 = ("CREATE TABLE " + TABLE_TRACKER + "(" + TR_NAME + " TEXT, " +
@@ -300,6 +302,46 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return logs;
     }
+
+    public void insertSupply(int formula, int diaper){
+        DateTime date = new DateTime();
+        String dateTime = date.toString(DateTimeFormat.shortDateTime());
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_DIAPER, diaper);
+        values.put(KEY_FORMULA, formula);
+        values.put(KEY_DATE, dateTime);
+
+        db.insert(TABLE_SUPPLY, null, values);
+        db.close();
+    }
+
+    public void insertDiaper(String type, String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(D_NAME, name);
+        values.put(KEY_TYPE, type);
+
+        db.insert(TABLE_DIAPER, null, values);
+        db.close();
+    }
+
+    public List<String> getDiaper(){
+        List<String> list = new ArrayList<>();
+        String query = "SELECT " + KEY_TYPE + " FROM " + TABLE_DIAPER;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                do {
+                    list.add(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+        }
+        return list;
+    }
     public ArrayList<ActivityData> getBottleFeed(){
         ActivityData data = new ActivityData();
         ArrayList<ActivityData> list = new ArrayList<>();
@@ -318,7 +360,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return list;
     }
 
-    public void insertBreastFeedTime(ActivityData data, String name){
+    /*public void insertBreastFeedTime(ActivityData data, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BR_NAME, name);
@@ -344,5 +386,5 @@ public class DBHelper extends SQLiteOpenHelper{
             }
         }
         return list;
-    }
+    }*/
 }

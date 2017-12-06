@@ -44,7 +44,8 @@
             android:orientation="horizontal"
             android:paddingRight="10dp"
             android:background="@drawable/box"
-            android:layout_marginRight="10dp">
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp">
 
 
             <ImageView
@@ -52,7 +53,8 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@color/colorAccent"
-                app:srcCompat="@drawable/bottle" />
+                app:srcCompat="@drawable/bottle"
+                android:layout_gravity="center"/>
 
             <TableLayout
                 android:layout_width="wrap_content"
@@ -97,6 +99,7 @@
                         android:text="Start"
                         android:background="@android:color/holo_green_light"
                         android:gravity="center"
+                        android:layout_marginBottom="7dp"
                         />
                 </TableRow>
             </TableLayout>
@@ -146,21 +149,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/box"
+            android:layout_marginLeft="5dp">
 
 
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@android:color/holo_blue_light"
-                app:srcCompat="@drawable/breast" />
+                app:srcCompat="@drawable/breast"
+                android:layout_gravity="center"/>
 
             <TableLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                android:paddingRight="100dp"
                 android:paddingBottom="10dp"
-                android:background="@drawable/box">
+                >
 
                 <TableRow>
 

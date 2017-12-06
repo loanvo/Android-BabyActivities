@@ -75,7 +75,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         setCalendar(birthdayEdit, this);
-
     }
 
     public void setCalendar(final EditText editText, final Context context){
@@ -100,14 +99,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
-/*
-    private void updateLabel(Calendar myCalendar){
-        String format = "MM/dd/yy";
-        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
-        birthdayEdit.setText(sdf.format(myCalendar.getTime()));
-    }*/
-
-
     @Override
     public void onClick(View v) {
         name = nameEdit.getText().toString();

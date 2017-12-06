@@ -290,4 +290,33 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         Intent intent = new Intent(this, WalkActivity.class);
         startActivity(intent);
     }
+
+    public void addSupply(View view){
+        final Dialog dialog = new Dialog(BabyActivities.this);
+        dialog.setContentView(R.layout.new_supply);
+        dialog.setTitle("Add Supply");
+        final EditText formulaEdit = (EditText) dialog.findViewById(R.id.formula_edit);
+        final EditText diaperEdit = (EditText) dialog.findViewById(R.id.diaper_edit);
+
+        Button saveButn = (Button) dialog.findViewById(R.id.save_btn);
+        Button cancelButn = (Button) dialog.findViewById(R.id.cancel_btn);
+
+        Window window = dialog.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        dialog.show();
+        saveButn.setOnClickListener(new View.OnClickListener() {
+            int formula  = 0;
+            int diaper = 0;
+
+            @Override
+            public void onClick(View v) {
+                formula = Integer.parseInt(formulaEdit.getText().toString());
+                diaper = Integer.parseInt(diaperEdit.getText().toString());
+
+                dbHelper.insertSupply(formula, diaper);
+                dialog.dismiss();
+            }
+        });
+    }
 }

@@ -89,7 +89,13 @@ public class FeedingActivity extends AppCompatActivity{
         feedingLog = (ListView) findViewById(R.id.feeding_logs);
 
         nameView.setText(name);
-        allLogs = dbHelper.getAllLog();
+        LinkedList<String> logs = dbHelper.getAllLog();
+        for(int i =0; i <logs.size(); i++){
+            String t = logs.get(i);
+            if(t.startsWith("Right") || t.startsWith("Left") || t.startsWith("Bottle")){
+                allLogs.addLast(logs.get(i));
+            }
+        }
         setLogView(allLogs);
 
         setStartButton(bottleButton);
@@ -213,7 +219,6 @@ public class FeedingActivity extends AppCompatActivity{
         button.setText("start");
         button.setBackgroundColor(Color.GREEN);
         just_started = false;
-        button.setClickable(true);
     }
 
     public void setStopButton(Button button){
@@ -221,7 +226,6 @@ public class FeedingActivity extends AppCompatActivity{
         button.setText("stop");
         button.setBackgroundColor(Color.RED);
         just_started = true;
-        button.setClickable(true);
     }
 
 
@@ -235,8 +239,7 @@ public class FeedingActivity extends AppCompatActivity{
         String timeString = formatTimeView(time);
         String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
         dbHelper.insetLog(bottleLog, name);
-        //mLogs.addFirst(bottleLog);
-        allLogs = dbHelper.getAllLog();
+        allLogs.addLast(bottleLog);
         setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
@@ -250,9 +253,7 @@ public class FeedingActivity extends AppCompatActivity{
         String timeString = formatTimeView(time);
         String log = "Left fed for " + timeString + " at " + current;
         dbHelper.insetLog(log, name);
-        //mLogs.addFirst(log);
-        //setLogView(mLogs);
-        allLogs = dbHelper.getAllLog();
+        allLogs.add(log);
         setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
@@ -264,9 +265,7 @@ public class FeedingActivity extends AppCompatActivity{
         String timeString = formatTimeView(time);
         String log = "Right fed for " + timeString + " at " + current;
         dbHelper.insetLog(log, name);
-        //mLogs.addFirst(log);
-        //setLogView(mLogs);
-        allLogs = dbHelper.getAllLog();
+        allLogs.addLast(log);
         setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
@@ -284,8 +283,6 @@ public class FeedingActivity extends AppCompatActivity{
     public String getCurrentTime(){
         String current = "";
         DateTime dateTime = new DateTime();
-        //current= String.valueOf(dateTime.getHourOfDay()) + ":"
-        //        + String.valueOf(dateTime.getMinuteOfHour());
         current = dateTime.toString(DateTimeFormat.shortDateTime());
         return current;
     }
@@ -332,14 +329,11 @@ public class FeedingActivity extends AppCompatActivity{
         @Override
         public void run() {
             time = SystemClock.uptimeMillis() - start;
-            setTime(time);
-
- //           time = (int) (time % 1000);
-
+            setTime(time, timeView);
             handler.postDelayed(this, 0);
         }
     };
-    public void setTime(long time){
+    public void setTime(long time, TextView timeView){
         seconds = (int) (time / 1000);
         minutes = seconds / 60;
         hours = minutes/60;
