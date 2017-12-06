@@ -286,7 +286,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public LinkedList<String> getAllLog(){
         LinkedList<String> logs = new LinkedList<>();
         ActivityLog activityLog = new ActivityLog();
-        String query = "SELECT " + LOG + " FROM " + TABLE_LOG + " ORDER BY " + LOG_ID + "DESC";
+        String query = "SELECT " + LOG + " FROM " + TABLE_LOG + " ORDER BY " + LOG_ID + " DESC";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if(cursor != null){

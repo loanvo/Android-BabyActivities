@@ -23,8 +23,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +45,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.Locale;
 
 public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
@@ -66,10 +69,13 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
     private TextView nameView;
     private TextView ageView;
+    private ListView logList;
 
     DBHelper dbHelper;
     BabyProfile babyProfile;
     String today;
+    FeedingActivity feedingActivity;
+    LinkedList<String> allLogs;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -114,8 +120,21 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         sensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
+        //display all logs
+        logList = (ListView) findViewById(R.id.today_list);
+        allLogs = new LinkedList<>();
+        allLogs = dbHelper.getAllLog();
+        setLogView(allLogs);
+
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
+    }
+
+    public void setLogView(LinkedList<String> allLogs){
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allLogs);
+        logList.setAdapter(arrayAdapter);
+        logList.setTextFilterEnabled(true);
     }
 
     public String getAge(String birthday){

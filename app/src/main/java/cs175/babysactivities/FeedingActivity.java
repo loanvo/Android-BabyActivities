@@ -89,6 +89,8 @@ public class FeedingActivity extends AppCompatActivity{
         feedingLog = (ListView) findViewById(R.id.feeding_logs);
 
         nameView.setText(name);
+        allLogs = dbHelper.getAllLog();
+        setLogView(allLogs);
 
         setStartButton(bottleButton);
         setStartButton(leftButton);
@@ -233,8 +235,9 @@ public class FeedingActivity extends AppCompatActivity{
         String timeString = formatTimeView(time);
         String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
         dbHelper.insetLog(bottleLog, name);
-        mLogs.addFirst(bottleLog);
-        setLogView();
+        //mLogs.addFirst(bottleLog);
+        allLogs = dbHelper.getAllLog();
+        setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
 
@@ -247,8 +250,10 @@ public class FeedingActivity extends AppCompatActivity{
         String timeString = formatTimeView(time);
         String log = "Left fed for " + timeString + " at " + current;
         dbHelper.insetLog(log, name);
-        mLogs.addFirst(log);
-        setLogView();
+        //mLogs.addFirst(log);
+        //setLogView(mLogs);
+        allLogs = dbHelper.getAllLog();
+        setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
     }
@@ -259,8 +264,10 @@ public class FeedingActivity extends AppCompatActivity{
         String timeString = formatTimeView(time);
         String log = "Right fed for " + timeString + " at " + current;
         dbHelper.insetLog(log, name);
-        mLogs.addFirst(log);
-        setLogView();
+        //mLogs.addFirst(log);
+        //setLogView(mLogs);
+        allLogs = dbHelper.getAllLog();
+        setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
     }
@@ -282,7 +289,7 @@ public class FeedingActivity extends AppCompatActivity{
         current = dateTime.toString(DateTimeFormat.shortDateTime());
         return current;
     }
-    public void setLogView(){
+    public void setLogView(LinkedList<String> mLogs){
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mLogs);
         feedingLog.setAdapter(arrayAdapter);
