@@ -105,7 +105,6 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         tempView = (TextView) findViewById(R.id.temp_view);
 
         babyProfile = dbHelper.getBabyInfo();
-        Log.d("pro=======", babyProfile.toString());
         nameView = (TextView) findViewById(R.id.name_view);
         nameView.setText(babyProfile.getName());
 
@@ -121,30 +120,34 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
     public String getAge(String birthday){
         String age ="";
-        if(birthday != null){
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
-            LocalDate dt = formatter.parseLocalDate(birthday);
-            int days = Days.daysBetween(dt, LocalDate.now()).getDays();
-            int month = dt.getMonthOfYear();
-            int months;
-            if (month == 1) {
-                months = days / 28;
-            } else if (month % 2 == 0) {
-                months = days / 30;
-            } else {
-                months = days / 31;
-            }
-            int years = months / 12;
-            months = months % 12;
-            days = days % 365;
-            if(years < 1){
-                if(months <1){
-                    age = "is " + days + " days old";
-                }else{
-                    age = "is " + months + " months "+ days + " days old";
+        if(birthday != null) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
+                LocalDate dt = formatter.parseLocalDate(birthday);
+                int days = Days.daysBetween(dt, LocalDate.now()).getDays();
+                int month = dt.getMonthOfYear();
+                int months;
+                if (month == 1) {
+                    months = days / 28;
+                } else if (month % 2 == 0) {
+                    months = days / 30;
+                } else {
+                    months = days / 31;
                 }
-            }else {
-                age = "is " + years + " years " + months + " months " + days + " days old";
+                int years = months / 12;
+                months = months % 12;
+                days = days % 365;
+                if (years < 1) {
+                    if (months < 1) {
+                        age = "is " + days + " days old";
+                    } else {
+                        age = "is " + months + " months " + days + " days old";
+                    }
+                } else {
+                    age = "is " + years + " years " + months + " months " + days + " days old";
+                }
+            } catch (IllegalArgumentException e) {
+                age = "wrong format birthday";
             }
         }else{
             age = "not provide birthday";

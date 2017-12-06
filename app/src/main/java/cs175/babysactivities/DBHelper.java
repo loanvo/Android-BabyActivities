@@ -238,7 +238,7 @@ public class DBHelper extends SQLiteOpenHelper{
     }
 
     public void removeStatus(String type){
-        String query = "DELETE " + START_TYPE + " FROM " + TABLE_TRACKER + " WHERE " + START_TYPE + " = " + "'" + type +"'";
+        String query = "DELETE FROM " + TABLE_TRACKER + " WHERE " + START_TYPE + " = " + '"' + type +'"';
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(query);
     }

@@ -38,12 +38,13 @@
             android:textSize="30dp" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:paddingRight="10dp"
-            android:background="@drawable/box">
+            android:background="@drawable/box"
+            android:layout_marginRight="10dp">
 
 
             <ImageView
@@ -70,7 +71,7 @@
 
                     <EditText
                         android:id="@+id/qantity_edit"
-                        android:layout_width="80dp"
+                        android:layout_width="70dp"
                         android:layout_height="wrap_content"
                         android:text="4"
                         android:textAlignment="center"
@@ -81,20 +82,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="scoops"
+                        android:text="oz"
                         android:textColor="@android:color/black"
                         android:textSize="25dp" />
                 </TableRow>
 
                 <TableRow>
 
-                    <Switch
+                    <Button
                         android:id="@+id/switch_bottle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="100dp"
+                        android:layout_marginLeft="50dp"
+                        android:text="Start"
                         android:background="@android:color/holo_green_light"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        />
                 </TableRow>
             </TableLayout>
 
@@ -169,12 +172,14 @@
                         android:text="Left:  "
                         android:textColor="@android:color/black"
                         android:textSize="25dp" />
-                    <Switch
+                    <Button
                         android:id="@+id/switch_left"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
-                        android:layout_marginLeft="100dp"
+                        android:text="start"
+                        android:layout_marginLeft="50dp"
                         android:background="@android:color/holo_green_light"/>
 
                 </TableRow>
@@ -188,13 +193,16 @@
                         android:text="Right:  "
                         android:textColor="@android:color/black"
                         android:textSize="25dp" />
-                    <Switch
+                    <Button
                         android:id="@+id/switch_right"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
                         android:gravity="center"
-                        android:layout_marginLeft="100dp"
-                        android:background="@android:color/holo_green_light"></Switch>
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginTop="5dp"
+                        android:text="start"
+
+                        android:background="@android:color/holo_green_light"></Button>
 
                 </TableRow>
             </TableLayout>

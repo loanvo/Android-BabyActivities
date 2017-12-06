@@ -3,6 +3,7 @@ package cs175.babysactivities;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -13,7 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.telecom.RemoteConnection;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -35,13 +38,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.LogRecord;
 
-public class FeedingActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener{
+public class FeedingActivity extends AppCompatActivity{
 
     TextView timeView;
     TextView nameView;
-    Switch bottleSwitch;
-    Switch leftSwitch;
-    Switch rightSwitch;
+    Button bottleButton;
+    Button leftButton;
+    Button rightButton;
     EditText quantityEdit;
     ListView feedingLog;
 
@@ -55,11 +58,11 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
     ActivityData data;
     String name;
     ArrayList<ActivityData> dataList;
-    private String current;
     private long stopTime;
     LinkedList<String> mLogs;
     long continued = 0;
-    boolean started = false;
+    boolean started_before = false;
+    boolean just_started = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,45 +77,190 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
         handler = new Handler();
         timeView = (TextView) findViewById(R.id.feed_timer_view);
         nameView = (TextView) findViewById(R.id.name_view);
-        bottleSwitch = (Switch) findViewById(R.id.switch_bottle);
+        bottleButton = (Button) findViewById(R.id.switch_bottle);
         quantityEdit = (EditText) findViewById(R.id.qantity_edit);
-        leftSwitch = (Switch) findViewById(R.id.switch_left);
-        rightSwitch = (Switch) findViewById(R.id.switch_right);
+        leftButton = (Button) findViewById(R.id.switch_left);
+        rightButton = (Button) findViewById(R.id.switch_right);
         feedingLog = (ListView) findViewById(R.id.feeding_logs);
 
         nameView.setText(name);
-        bottleSwitch.setOnCheckedChangeListener(this);
-        leftSwitch.setOnCheckedChangeListener(this);
-        rightSwitch.setOnCheckedChangeListener(this);
+
+        setStartButton(bottleButton);
+
+        setStartButton(leftButton);
+
+        setStartButton(rightButton);
 
         data = dbHelper.getStatus();
         if(data.getStartType() != null) {
             if (data.getStartType().equals("bottle")) {
                 continued = Long.parseLong(data.getStart());
-                started = true;
-                //setTime(cont);
-                bottleSwitch.setChecked(true);
-                // leftSwitch.setClickable(false);
-                // rightSwitch.setClickable(false);
+                started_before = true;
+                setStopButton(bottleButton);
+                clockRunning();
+                rightButton.setClickable(false);
+                leftButton.setClickable(false);
+
             } else if (data.getStartType().equals("left")) {
                 continued = Long.parseLong(data.getStart());
-                started = true;
-                leftSwitch.setChecked(true);
+                started_before = true;
+                setStopButton(leftButton);
+                clockRunning();
+                bottleButton.setClickable(false);
+                rightButton.setClickable(false);
+
             } else if (data.getStartType().equals("right")) {
                 continued = Long.parseLong(data.getStart());
-                rightSwitch.setChecked(true);
-                started = true;
-            } else {
-                continued = 0;
-                started = false;
+                started_before = true;
+                setStopButton(rightButton);
+                clockRunning();
+                leftButton.setClickable(false);
+                bottleButton.setClickable(false);
+
+            }else{
+                continued =0;
+                started_before =false;
+                setAllClickable();
+                time =0;
             }
         }else{
+            time =0;
             continued =0;
-            started =false;
+            started_before =false;
+            setAllClickable();
         }
+
+        bottleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int status = (Integer) v.getTag();
+                if(just_started == false){
+                    leftButton.setClickable(false);
+                    rightButton.setClickable(false);
+                    setStopButton(bottleButton);
+                    clockRunning();
+                    data.setStartType("bottle");
+                    data.setStart(String.valueOf(start));
+                    dbHelper.insertStatus(data, name);
+                }else {
+                    setAllClickable();
+                    setStartButton(bottleButton);
+                    stopBottle();
+                    dbHelper.removeStatus("bottle");
+                    //time = 0;
+                }
+
+            }
+        });
+
+        leftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int status = (Integer) v.getTag();
+                if(just_started == false){
+                    bottleButton.setClickable(false);
+                   rightButton.setClickable(false);
+                    setStopButton(leftButton);
+                    clockRunning();
+                    data.setStartType("left");
+                    data.setStart(String.valueOf(start));
+                    dbHelper.insertStatus(data, name);
+                }else {
+                    setAllClickable();
+                    setStartButton(leftButton);
+                    stopLeft();
+                    dbHelper.removeStatus("left");
+                    //time = 0;
+                }
+
+            }
+        });
+        rightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int status = (Integer) v.getTag();
+                if(just_started == false ){
+                    leftButton.setClickable(false);
+                    bottleButton.setClickable(false);
+                    setStopButton(rightButton);
+                    clockRunning();
+                    data.setStartType("right");
+                    data.setStart(String.valueOf(start));
+                    dbHelper.insertStatus(data, name);
+                }else {
+                    setAllClickable();
+                    setStartButton(rightButton);
+                    stopRight();
+                    dbHelper.removeStatus("right");
+                    //time =0;
+                }
+
+            }
+        });
+
+    }
+    public void setAllClickable(){
+        bottleButton.setClickable(true);
+        leftButton.setClickable(true);
+        rightButton.setClickable(true);
+    }
+
+    public void setStartButton(Button button){
+        button.setTag(1);
+        button.setText("start");
+        button.setBackgroundColor(Color.GREEN);
+        just_started = false;
+        button.setClickable(true);
+    }
+
+    public void setStopButton(Button button){
+        button.setTag(0);
+        button.setText("stop");
+        button.setBackgroundColor(Color.RED);
+        just_started = true;
+        button.setClickable(true);
     }
 
 
+    public void stopBottle(){
+        String current = getCurrentTime();
+        String quan = quantityEdit.getText().toString();
+        if (quan.isEmpty()) {
+            data.setQuanity(0);
+        } else data.setQuanity(Integer.parseInt(quan));
+        data.setBottleTime(time);
+        String timeString = formatTimeView(time);
+        String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
+        mLogs.addFirst(bottleLog);
+        setLogView();
+        handler.removeCallbacks(runnable);
+        time = 0;
+
+    }
+
+    public void stopLeft(){
+
+        String current = getCurrentTime();
+        data.setLeftTime(time);
+        String timeString = formatTimeView(time);
+        String log = "Left fed for " + timeString + " at " + current;
+        mLogs.addFirst(log);
+        setLogView();
+        handler.removeCallbacks(runnable);
+        time = 0;
+    }
+
+    public void stopRight(){
+        String current = getCurrentTime();
+        data.setRightTime(time);
+        String timeString = formatTimeView(time);
+        String log = "Right fed for " + timeString + " at " + current;
+        mLogs.addFirst(log);
+        setLogView();
+        handler.removeCallbacks(runnable);
+        time = 0;
+    }
+    /*
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
@@ -127,10 +275,11 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                     rightSwitch.setClickable(false);
                     if(data.getStartType() != null && data.getStartType().equals("bottle")){
                         dbHelper.removeStatus(data.getStartType());
+                        data.setStartType("bottle");
+                        data.setStart(String.valueOf(start));
+                        dbHelper.insertStatus(data,name);
                     }
-                    data.setStartType("bottle");
-                    data.setStart(String.valueOf(start));
-                    dbHelper.insertStatus(data,name);
+
                 } else {
                     leftSwitch.setClickable(true);
                     bottleSwitch.setClickable(true);
@@ -231,12 +380,12 @@ public class FeedingActivity extends AppCompatActivity implements CompoundButton
                 break;
         }
 
-    }
+    }*/
 
 
 
     public void clockRunning(){
-        if(started==true) {
+        if(started_before==true) {
             start = continued;
         }else{
             start = SystemClock.uptimeMillis();
