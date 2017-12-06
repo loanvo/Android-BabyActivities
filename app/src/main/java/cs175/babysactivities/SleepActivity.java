@@ -55,7 +55,8 @@ public class SleepActivity extends AppCompatActivity {
         feedingActivity = new FeedingActivity();
         sleepLogs = dbHelper.getAllLog();
         name = dbHelper.getBabyName();
-        setLogView(sleepLogs, name);
+        nameView.setText(name);
+        setLogView(sleepLogs);
         data = dbHelper.getStatus();
         if(data.getStartType() != null) {
             if (data.getStartType().equals("sleep")) {
@@ -127,8 +128,8 @@ public class SleepActivity extends AppCompatActivity {
         String log = "Slept for " + timeString + " at " + current;
         dbHelper.insetLog(log, name);
         //LinkedList<String> mlogs = new LinkedList<>();
-        sleepLogs.addLast(log);
-        setLogView(sleepLogs, name);
+        sleepLogs.addFirst(log);
+        setLogView(sleepLogs);
         handler.removeCallbacks(runnable);
         time = 0;
     }
@@ -140,7 +141,7 @@ public class SleepActivity extends AppCompatActivity {
             handler.postDelayed(this, 0);
         }
     };
-    public void setLogView(LinkedList<String> logs, String name){
+    public void setLogView(LinkedList<String> logs){
         for(int i =0; i <logs.size(); i++){
             if(logs.get(i).startsWith("Slept")){
                 sleepLogs.addLast(logs.get(i));

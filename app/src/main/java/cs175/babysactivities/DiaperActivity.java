@@ -17,9 +17,9 @@ import org.joda.time.format.DateTimeFormat;
 import java.util.LinkedList;
 
 public class DiaperActivity extends AppCompatActivity implements View.OnClickListener{
-    private CheckBox poo;
-    private CheckBox pee;
-    private CheckBox both;
+    private CheckBox pooBox;
+    private CheckBox peeBox;
+    private CheckBox bothBox;
     private ListView diaperList;
 
     private TextView nameView;
@@ -38,53 +38,53 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         diaperLogs = new LinkedList();
 
         nameView = (TextView) findViewById(R.id.name_view);
-        poo = (CheckBox) findViewById(R.id.poo);
-        pee = (CheckBox) findViewById(R.id.pee);
-        both = (CheckBox) findViewById(R.id.both);
+        pooBox = (CheckBox) findViewById(R.id.poo);
+        peeBox = (CheckBox) findViewById(R.id.pee);
+        bothBox = (CheckBox) findViewById(R.id.both);
         diaperList = (ListView) findViewById(R.id.diaper_list);
 
         name = dbHelper.getBabyName();
         nameView.setText(name);
        // LinkedList<String> logs = new LinkedList<>();
         diaperLogs = dbHelper.getAllLog();
-        setLogView(diaperLogs, name);
+        setLogView(diaperLogs);
 
-        poo.setOnClickListener(this);
-        pee.setOnClickListener(this);
-        both.setOnClickListener(this);
+        pooBox.setOnClickListener(this);
+        peeBox.setOnClickListener(this);
+        bothBox.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.poo:
-                if(poo.isChecked()){
+                if(pooBox.isChecked()){
                     current = getCurrentTime();
                     dbHelper.insertDiaper("poo", name);
                     String log = "Poo-poo at " + current;
                     dbHelper.insetLog(log, name);
-                    diaperLogs.addLast(log);
-                    setLogView(diaperLogs, name);
-                }
+                    diaperLogs.addFirst(log);
+                    setLogView(diaperLogs);
+                    }
                 break;
             case R.id.pee:
-                if(pee.isChecked()){
+                if(peeBox.isChecked()){
                     current = getCurrentTime();
                     dbHelper.insertDiaper("pee", name);
                     String log = "Pee-pee at " + current;
                     dbHelper.insetLog(log, name);
-                    diaperLogs.addLast(log);
-                    setLogView(diaperLogs, name);
+                    diaperLogs.addFirst(log);
+                    setLogView(diaperLogs);
                 }
                 break;
             case R.id.both:
-                if(both.isChecked()){
+                if(bothBox.isChecked()){
                     current = getCurrentTime();
                     dbHelper.insertDiaper("both", name);
                     String log = "Pee-pee and Poo-pee at " + current;
                     dbHelper.insetLog(log, name);
-                    diaperLogs.addLast(log);
-                    setLogView(diaperLogs, name);
+                    diaperLogs.addFirst(log);
+                    setLogView(diaperLogs);
                 }
                 break;
         }
@@ -96,7 +96,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         current = dateTime.toString(DateTimeFormat.shortDateTime());
         return current;
     }
-    public void setLogView(LinkedList<String> logs, String name){
+    public void setLogView(LinkedList<String> logs){
         LinkedList<String> mlogs = new LinkedList<>();
         for(int i =0; i <logs.size(); i++){
             String type = logs.get(i);
