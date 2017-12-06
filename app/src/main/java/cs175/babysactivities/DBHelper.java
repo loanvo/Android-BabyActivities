@@ -7,13 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Created by Loan Vo on 11/30/17.
  */
 
 public class DBHelper extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "BabyActivities";
 
     // Table Profile
@@ -73,6 +74,13 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String START_TIME = "start";
     private static final String STOP_TIME = "stop";
 
+    // Table Log
+    private static final String TABLE_LOG = "log_table";
+    private static final String LOG_ID = "id";
+    private static final String L_NAME = "name";
+    private static final String LOG = "logs";
+
+
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -98,7 +106,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry4);
 
-        String querry5 = ("CREATE TABLE " + TABLE_SLEEP + "(" + S_NAME + " INTEGER, " +
+        String querry5 = ("CREATE TABLE " + TABLE_SLEEP + "(" + S_NAME + " TEXT, " +
                 KEY_SLEEP_TIME + " TEXT, "  +  " FOREIGN KEY (" + S_NAME + ") REFERENCES "
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry5);
@@ -118,6 +126,11 @@ public class DBHelper extends SQLiteOpenHelper{
                 START_TYPE + " TEXT, " + START_TIME + " TEXT," + STOP_TYPE +" TEXT, " + STOP_TIME +
                 " TEXT, FOREIGN KEY (" + SU_NAME + ") REFERENCES " + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry8);
+
+        String querry9 = ("CREATE TABLE " + TABLE_LOG + "(" + LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                L_NAME + " TEXT, " + LOG + " TEXT, " +  " FOREIGN KEY (" + L_NAME + ") REFERENCES "
+                + TABLE_PROFILE + "(" + KEY_NAME + "))");
+        db.execSQL (querry9);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int version1, int version2) {
@@ -129,6 +142,8 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WALK);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUPPLY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRACKER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
+
         onCreate(db);
     }
 
@@ -233,7 +248,6 @@ public class DBHelper extends SQLiteOpenHelper{
         values.put(STOP_TIME, data.getStop().toString());
 
         db.update(TABLE_TRACKER, values, START_TYPE + "=?", new String[]{startType});
-
         db.close();
     }
 
@@ -259,8 +273,33 @@ public class DBHelper extends SQLiteOpenHelper{
         return data;
     }
 
+    public void insetLog(String log, String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(L_NAME, name);
+        values.put(LOG, log);
 
+        db.insert(TABLE_LOG, null, values);
+        db.close();
+    }
 
+    public LinkedList<String> getAllLog(){
+        LinkedList<String> logs = new LinkedList<>();
+        ActivityLog activityLog = new ActivityLog();
+        String query = "SELECT " + LOG + " FROM " + TABLE_LOG + " ORDER BY " + LOG_ID + "DESC";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                do {
+                    String aLog = cursor.getString(0);
+                    activityLog.setLog(aLog);
+                    logs.addLast(aLog);
+                } while (cursor.moveToNext());
+            }
+        }
+        return logs;
+    }
     public ArrayList<ActivityData> getBottleFeed(){
         ActivityData data = new ActivityData();
         ArrayList<ActivityData> list = new ArrayList<>();

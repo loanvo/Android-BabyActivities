@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -63,6 +64,8 @@ public class FeedingActivity extends AppCompatActivity{
     long continued = 0;
     boolean started_before = false;
     boolean just_started = false;
+    ActivityLog activityLog;
+    LinkedList<String> allLogs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,8 @@ public class FeedingActivity extends AppCompatActivity{
         data = new ActivityData();
         dataList = new ArrayList<>();
         mLogs = new LinkedList<>();
+        allLogs = new LinkedList<>();
+        activityLog = new ActivityLog();
         dbHelper = new DBHelper(this);
         name = dbHelper.getBabyName();
         handler = new Handler();
@@ -86,9 +91,7 @@ public class FeedingActivity extends AppCompatActivity{
         nameView.setText(name);
 
         setStartButton(bottleButton);
-
         setStartButton(leftButton);
-
         setStartButton(rightButton);
 
         data = dbHelper.getStatus();
@@ -170,7 +173,6 @@ public class FeedingActivity extends AppCompatActivity{
                     setStartButton(leftButton);
                     stopLeft();
                     dbHelper.removeStatus("left");
-                    //time = 0;
                 }
 
             }
@@ -192,7 +194,6 @@ public class FeedingActivity extends AppCompatActivity{
                     setStartButton(rightButton);
                     stopRight();
                     dbHelper.removeStatus("right");
-                    //time =0;
                 }
 
             }
@@ -231,6 +232,7 @@ public class FeedingActivity extends AppCompatActivity{
         data.setBottleTime(time);
         String timeString = formatTimeView(time);
         String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
+        dbHelper.insetLog(bottleLog, name);
         mLogs.addFirst(bottleLog);
         setLogView();
         handler.removeCallbacks(runnable);
@@ -244,6 +246,7 @@ public class FeedingActivity extends AppCompatActivity{
         data.setLeftTime(time);
         String timeString = formatTimeView(time);
         String log = "Left fed for " + timeString + " at " + current;
+        dbHelper.insetLog(log, name);
         mLogs.addFirst(log);
         setLogView();
         handler.removeCallbacks(runnable);
@@ -255,133 +258,12 @@ public class FeedingActivity extends AppCompatActivity{
         data.setRightTime(time);
         String timeString = formatTimeView(time);
         String log = "Right fed for " + timeString + " at " + current;
+        dbHelper.insetLog(log, name);
         mLogs.addFirst(log);
         setLogView();
         handler.removeCallbacks(runnable);
         time = 0;
     }
-    /*
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        switch (buttonView.getId()) {
-            case R.id.switch_bottle:
-                if (bottleSwitch.isChecked()) {
-
-                    //get the real time when start feeding
-                    current = getCurrentTime();
-                    clockRunning();
-
-                    leftSwitch.setClickable(false);
-                    rightSwitch.setClickable(false);
-                    if(data.getStartType() != null && data.getStartType().equals("bottle")){
-                        dbHelper.removeStatus(data.getStartType());
-                        data.setStartType("bottle");
-                        data.setStart(String.valueOf(start));
-                        dbHelper.insertStatus(data,name);
-                    }
-
-                } else {
-                    leftSwitch.setClickable(true);
-                    bottleSwitch.setClickable(true);
-                    rightSwitch.setClickable(true);
-
-                    stopTime = SystemClock.uptimeMillis();
-                    data.setStop(String.valueOf(stopTime));
-                    data.setStopType("bottle");
-                    dbHelper.updateStatus("bottle",data, name);
-
-                    String quan = quantityEdit.getText().toString();
-                    if (quan.isEmpty()) {
-                        data.setQuanity(0);
-                    } else data.setQuanity(Integer.parseInt(quan));
-                    data.setBottleTime(time);
-                    String timeString = formatTimeView(time);
-                    String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
-                    mLogs.addFirst(bottleLog);
-                    dbHelper.insertBottleFeedTime(data, name);
-                   // dataList = dbHelper.getBottleFeed();
-                    setLogView();
-                    handler.removeCallbacks(runnable);
-                    time = 0;
-                }
-                break;
-            case R.id.switch_left:
-                if (leftSwitch.isChecked()) {
-                    //get the real time when start feeding
-                    if(data.getStartType() != null &&data.getStartType().equals("left")){
-                        dbHelper.removeStatus(data.getStartType());
-                    }
-                    data.setStartType("left");
-                    data.setStart(String.valueOf(start));
-                    dbHelper.insertStatus(data,name);
-
-                    current = getCurrentTime();
-                    clockRunning();
-                    bottleSwitch.setClickable(false);
-                    rightSwitch.setClickable(false);
-                } else {
-
-                    leftSwitch.setClickable(true);
-                    bottleSwitch.setClickable(true);
-                    rightSwitch.setClickable(true);
-
-                    stopTime = SystemClock.uptimeMillis();
-                    data.setStop(String.valueOf(stopTime));
-                    data.setStopType("left");
-                    dbHelper.updateStatus("left",data, name);
-
-                    data.setLeftTime(time);
-                    data.setRightTime(0);
-                    dbHelper.insertBreastFeedTime(data, name);
-                    //dataList = dbHelper.getBreastFeed();
-                    String timeString = formatTimeView(time);
-                    String leftLog = "Left fed for " + timeString + " at " + current;
-                    mLogs.addFirst(leftLog);
-                    setLogView();
-                    handler.removeCallbacks(runnable);
-                    time = 0;
-                }
-                break;
-            case R.id.switch_right:
-                if (rightSwitch.isChecked()) {
-                    //get the real time when start feeding
-                    current = getCurrentTime();
-                    if(data.getStartType() != null &&data.getStartType().equals("right")){
-                        dbHelper.removeStatus(data.getStartType());
-                    }
-                    data.setStartType("right");
-                    data.setStart(String.valueOf(start));
-                    dbHelper.insertStatus(data,name);
-                    clockRunning();
-                    bottleSwitch.setClickable(false);
-                    leftSwitch.setClickable(false);
-                } else {
-
-                    leftSwitch.setClickable(true);
-                    bottleSwitch.setClickable(true);
-                    rightSwitch.setClickable(true);
-
-                    stopTime = SystemClock.uptimeMillis();
-                    data.setStop(String.valueOf(stopTime));
-                    data.setStopType("right");
-                    dbHelper.updateStatus("right", data, name);
-
-                    data.setRightTime(time);
-                    data.setLeftTime(0);
-                    dbHelper.insertBreastFeedTime(data, name);
-                    //dataList = dbHelper.getBreastFeed();
-                    String timeString = formatTimeView(time);
-                    String leftLog = "Right fed for " + timeString + " at " + current;
-                    mLogs.addFirst(leftLog);
-                    setLogView();
-                    handler.removeCallbacks(runnable);
-                    time = 0;
-                }
-                break;
-        }
-
-    }*/
-
 
 
     public void clockRunning(){
@@ -395,8 +277,9 @@ public class FeedingActivity extends AppCompatActivity{
     public String getCurrentTime(){
         String current = "";
         DateTime dateTime = new DateTime();
-        current= String.valueOf(dateTime.getHourOfDay()) + ":"
-                + String.valueOf(dateTime.getMinuteOfHour());
+        //current= String.valueOf(dateTime.getHourOfDay()) + ":"
+        //        + String.valueOf(dateTime.getMinuteOfHour());
+        current = dateTime.toString(DateTimeFormat.shortDateTime());
         return current;
     }
     public void setLogView(){
