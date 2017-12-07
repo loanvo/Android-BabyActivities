@@ -11,38 +11,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="40dp">
+       >
         <TextView
             android:id="@+id/name_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginVertical="@dimen/fab_margin"
             android:drawableLeft="@drawable/babyface"
             android:gravity="center"
             android:text="Name"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="30dp" />
+    \
 
         <TextView
             android:id="@+id/walk_timer_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginVertical="@dimen/fab_margin"
             android:drawableLeft="@drawable/timer"
             android:gravity="center"
-            android:text="60:20"
+            android:text="00:00:00"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="30dp"
+
             />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp">
+            >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -54,7 +55,7 @@
                 android:id="@+id/step_view"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:text="1000"
+                android:text="0"
                 android:textSize="30sp"
                 android:textColor="@android:color/holo_blue_dark"/>
             <TextView
@@ -75,23 +76,39 @@
             android:background="@drawable/box"
             android:layout_gravity="center"
             >
-            <ImageView
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:text="Play music"
+                android:background="@android:color/holo_blue_light"
+                android:layout_marginRight="40dp"
+                android:id="@+id/music_button"
+                android:layout_marginLeft="10dp"/>
 
+            <ImageView
                 android:layout_width="110dp"
                 android:layout_height="110dp"
                 android:background="@android:color/holo_purple"
                 app:srcCompat="@drawable/walk" />
 
-            <Switch
+            <Button
                 android:id="@+id/start_walk"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="40dp"
                 android:background="@android:color/holo_green_light"
                 android:gravity="center"
-                android:layout_marginTop="40dp"/>
+                android:layout_marginTop="40dp"
+                android:text="start"/>
 
-
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            <include android:id="@+id/today_logs" layout="@layout/log_view"/>
+            <include android:id="@+id/previous_logs" layout="@layout/log_view"/>
         </LinearLayout>
 
 

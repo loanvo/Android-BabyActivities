@@ -308,7 +308,7 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public List<ActivityLog> getAllLog(){
         List<ActivityLog> logs = new ArrayList<>();
-        String query = "SELECT * FROM " + TABLE_LOG + " ORDER BY " + LOG_DATE + " DESC";
+        String query = "SELECT * FROM " + TABLE_LOG + " ORDER BY " + LOG_DATE + " ASC";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if(cursor != null){
