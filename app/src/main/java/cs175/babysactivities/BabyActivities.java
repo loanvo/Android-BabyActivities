@@ -157,21 +157,20 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
-
+        today.setText("Today Activites");
         //List view of previous days logs
         layout = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+        previous.setText("Previous Days Activities");
 
         for(int i =0; i<logs.size(); i++) {
             log = logs.get(i);
             date = log.getLogDate();
             if (date.equals(currentdate)) {
-                today.setText("Today Activites");
-                mLogs.add(log.getLog());
+                todayLogs.add(log.getLog());
             } else {
-                previous.setText("Previous Days Activities");
-                mLogs.add(log.getLog() + " on " + log.getLogDate());
+                previousLogs.add(log.getLog() + " on " + log.getLogDate());
             }
         }
         today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);

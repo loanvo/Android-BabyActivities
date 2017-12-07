@@ -84,6 +84,8 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String LOG = "logs";
     private static final String LOG_DATE = "logs_date";
 
+    ActivityLog activityLog;
+
 
     public DBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -306,14 +308,13 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public List<ActivityLog> getAllLog(){
         List<ActivityLog> logs = new ArrayList<>();
-        ActivityLog activityLog = new ActivityLog();
-
         String query = "SELECT * FROM " + TABLE_LOG + " ORDER BY " + LOG_DATE + " DESC";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if(cursor != null){
             if(cursor.moveToFirst()){
                 do {
+                    activityLog = new ActivityLog();
                     activityLog.setName(cursor.getString(1));
                     activityLog.setLog(cursor.getString(2));
                     activityLog.setLogDate(cursor.getString(3));

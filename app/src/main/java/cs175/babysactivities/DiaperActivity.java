@@ -49,16 +49,13 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         dbHelper = new DBHelper(this);
         diaperLogs = new ArrayList<>();
         activityLog = new ActivityLog();
-        //mLogs = new ArrayList<>();
         nameView = (TextView) findViewById(R.id.name_view);
         pooBox = (CheckBox) findViewById(R.id.poo);
         peeBox = (CheckBox) findViewById(R.id.pee);
         bothBox = (CheckBox) findViewById(R.id.both);
-        //diaperList = (ListView) findViewById(R.id.diaper_list);
 
         name = dbHelper.getBabyName();
         nameView.setText(name);
-       // LinkedList<String> logs = new LinkedList<>();
         diaperLogs = dbHelper.getAllLog();
         if(diaperLogs != null) {
             setLogView(diaperLogs);
@@ -87,6 +84,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
 
                     diaperLogs.add(activityLog);
                     setLogView(diaperLogs);
+                    pooBox.setChecked(false);
                     }
                 break;
             case R.id.pee:
@@ -105,6 +103,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
 
                     diaperLogs.add(activityLog);
                     setLogView(diaperLogs);
+                    peeBox.setChecked(false);
                 }
                 break;
             case R.id.both:
@@ -114,7 +113,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     current = activityLog.getCurrentTime();
                     logTime = activityLog.splitTime(current);
                     logDate = activityLog.splitDate(current);
-                    log = "Pee-pee and Poo-pee at " + logTime;
+                    log = "Pee-pee and Poo-poo at " + logTime;
 
                     activityLog.setName(name);
                     activityLog.setLog(log);
@@ -123,6 +122,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
 
                     diaperLogs.add(activityLog);
                     setLogView(diaperLogs);
+                    bothBox.setChecked(false);
                 }
                 break;
         }
@@ -138,11 +138,13 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
+        today.setText("Today Activites");
 
         //List view of previous days logs
         layout = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+        previous.setText("Previous Days Activities");
 
         todayLogs = new ArrayList<>();
         previousLogs = new ArrayList<>();
@@ -152,11 +154,11 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
             if(type.startsWith("Poo-poo") || type.startsWith("Pee-pee")){
                 date = log.getLogDate();
                 if (date.equals(currentdate)) {
-                    today.setText("Today Activites");
-                    todayLogs.add(type);
+
+                    todayLogs.add(log.getLog());
                 } else {
-                    previous.setText("Previous Days Activities");
-                    previousLogs.add(type+ " on " + log.getLogDate());
+
+                    previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 }
             }
         }
@@ -167,22 +169,5 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         previoud_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
         previousLog.setAdapter(previoud_arrayAdapter);
         previousLog.setTextFilterEnabled(true);
-
-
     }
-/*
-    public void setLogView(LinkedList<String> logs){
-        LinkedList<String> mlogs = new LinkedList<>();
-        for(int i =0; i <logs.size(); i++){
-            String type = logs.get(i);
-            if(type.startsWith("Poo-poo") || type.startsWith("Pee-pee")){
-                mlogs.addLast(logs.get(i));
-            }
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mlogs);
-        diaperList.setAdapter(arrayAdapter);
-        diaperList.setTextFilterEnabled(true);
-    }
-
-*/
 }

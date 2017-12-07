@@ -111,7 +111,6 @@ public class SleepActivity extends AppCompatActivity {
         sleepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                final int status = (Integer) v.getTag();
                 if(just_started == false){
                     sleepButton.setBackgroundColor(Color.RED);
                     sleepButton.setText("stop");
@@ -198,10 +197,10 @@ public class SleepActivity extends AppCompatActivity {
                 date = log.getLogDate();
                 if (date.equals(currentdate)) {
                     today.setText("Today Activites");
-                    mLogs.add(log.getLog());
+                    todayLogs.add(log.getLog());
                 } else {
                     previous.setText("Previous Days Activities");
-                    mLogs.add(log.getLog() + " on " + log.getLogDate());
+                    previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 }
             }
         }
@@ -217,16 +216,6 @@ public class SleepActivity extends AppCompatActivity {
 
     }
 
-   /* public void setLogView(LinkedList<String> logs){
-        for(int i =0; i <logs.size(); i++){
-            if(logs.get(i).startsWith("Slept")){
-                sleepLogs.addLast(logs.get(i));
-            }
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sleepLogs);
-        sleepList.setAdapter(arrayAdapter);
-        sleepList.setTextFilterEnabled(true);
-    }*/
 
 
 }

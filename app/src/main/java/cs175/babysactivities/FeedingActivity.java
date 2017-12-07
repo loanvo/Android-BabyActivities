@@ -104,16 +104,7 @@ public class FeedingActivity extends AppCompatActivity{
         rightButton = (Button) findViewById(R.id.switch_right);
 
         nameView.setText(name);
-       /* List<ActivityLog> logs = dbHelper.getAllLog();
-        ActivityLog log = new ActivityLog();
 
-        for(int i =0; i <logs.size(); i++){
-            log = logs.get(i);
-            String t = log.getLog();
-            if(t.startsWith("Right") || t.startsWith("Left") || t.startsWith("Bottle")){
-                allLogs.add(log);
-            }
-        }*/
        allLogs = dbHelper.getAllLog();
        if(allLogs != null) {
            setLogView(allLogs);
@@ -178,9 +169,7 @@ public class FeedingActivity extends AppCompatActivity{
                     setStartButton(bottleButton);
                     stopBottle();
                     dbHelper.removeStatus("bottle");
-                    //time = 0;
                 }
-
             }
         });
 
@@ -223,7 +212,6 @@ public class FeedingActivity extends AppCompatActivity{
                     stopRight();
                     dbHelper.removeStatus("right");
                 }
-
             }
         });
 
@@ -248,7 +236,6 @@ public class FeedingActivity extends AppCompatActivity{
         just_started = true;
     }
 
-
     public void stopBottle(){
         String quan = quantityEdit.getText().toString();
         if (quan.isEmpty()) {
@@ -272,7 +259,6 @@ public class FeedingActivity extends AppCompatActivity{
         setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
-
     }
 
     public void stopLeft(){
@@ -341,11 +327,13 @@ public class FeedingActivity extends AppCompatActivity{
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
+        today.setText("Today Activites");
 
         //List view of previous days logs
         layout = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+        previous.setText("Previous Days Activities");
 
         ActivityLog log = new ActivityLog();
         todayLogs = new ArrayList<>();
@@ -357,10 +345,10 @@ public class FeedingActivity extends AppCompatActivity{
             if(type.startsWith("Right") || type.startsWith("Left") || type.startsWith("Bottle")){
                 date = log.getLogDate();
                 if (date.equals(currentdate)) {
-                    today.setText("Today Activites");
+
                     todayLogs.add(log.getLog());
                 } else {
-                    previous.setText("Previous Days Activities");
+
                     previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 }
             }
@@ -373,38 +361,7 @@ public class FeedingActivity extends AppCompatActivity{
         previousLog.setAdapter(previoud_arrayAdapter);
         previousLog.setTextFilterEnabled(true);
     }
-/*
-    public String formatTimeView(long millis){
-        String timeView = "";
-        int seconds = (int) (millis / 1000);
-        int minutes = seconds / 60;
-        int hours = minutes/60;
-        int day = hours/24;
-        seconds = seconds % 60;
-        minutes = minutes % 60;
-        hours = hours % 24;
-        if(day < 1){
-            if(hours < 1){
-                if(minutes < 1){
-                    timeView = String.format("%02d", seconds) + " sec";
-                }else{
-                    timeView = String.format("%02d", minutes) + " min "
-                            + String.format("%02d", seconds) + " sec";
-                }
-            }else{
-               timeView = String.format("%02d", hours) + " hr "
-                        + String.format("%02d", minutes) + " min "
-                        + String.format("%02d", seconds) + " sec";
-            }
-        }else {
-            timeView = "" + String.format("%02d", day) + " day "
-                    + String.format("%02d", hours) + " hr "
-                    + String.format("%02d", minutes) + " min "
-                    + String.format("%02d", seconds) + " sec";
-        }
-        return timeView;
-    }
-*/
+
     public Runnable runnable = new Runnable() {
         @Override
         public void run() {
