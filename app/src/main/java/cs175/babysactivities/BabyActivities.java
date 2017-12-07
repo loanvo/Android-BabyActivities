@@ -1,21 +1,27 @@
 package cs175.babysactivities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.icu.util.DateInterval;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,20 +57,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
+public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
 
     private TextView mTextMessage;
 
     SensorManager sensorManager;
     Sensor sensor;
-    float temperature =0f;
+    float temperature = 0f;
 
     //constant to calculate temperature references at keisan.casio.com
     final static float CONSTANT1 = 5.257F;
     final static float CONSTANT2 = 0.0065F;
     final static float CONSTANT3 = 273.15F;
 
-    private TextView tempView;
+
     private Button feedButton;
     private Button diaperButton;
     private Button sleepButton;
@@ -73,6 +79,9 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
     private TextView nameView;
     private TextView ageView;
     private ListView logList;
+
+    static TextView tempView;
+    static TextView cityName;
 
     DBHelper dbHelper;
     BabyProfile babyProfile;
@@ -124,6 +133,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         tempView = (TextView) findViewById(R.id.temp_view);
+        cityName = (TextView) findViewById(R.id.city_name);
 
         babyProfile = dbHelper.getBabyInfo();
         nameView = (TextView) findViewById(R.id.name_view);
@@ -132,18 +142,39 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         String birthday = babyProfile.getDOB();
         ageView = (TextView) findViewById(R.id.age_view);
         ageView.setText(getAge(birthday));
-        sensorManager =(SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         //display all logs
         //logList = (ListView) findViewById(R.id.today_list);
         allLogs = new ArrayList<>();
         allLogs = dbHelper.getAllLog();
-        if(allLogs != null) {
+        if (allLogs != null) {
             setLogView(allLogs);
         }
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
+
+        //implement weather
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        String provider = locationManager.getBestProvider(new Criteria(), false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(provider);
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+
+        DownloadTask task = new DownloadTask();
+        task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
+                 "&lon=" + String.valueOf(lng) + "&appid=6c41ae963d3fcf20c1d0a60873464867");
     }
 
     public void setLogView(List<ActivityLog> logs){
@@ -308,7 +339,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
             temp =  Double.valueOf((1/(1 - Math.pow(Math.E, Math.log(pressure/sealevel)/CONSTANT1)))
                    *(CONSTANT2*altitude) - CONSTANT2*altitude - CONSTANT3).floatValue();
             temperature = Math.round(temp * 10f) / 10f; //round up 1 decimal
-            tempView.setText(Float.toString(temperature));
+            //tempView.setText(Float.toString(temperature));
         }
     }
 
