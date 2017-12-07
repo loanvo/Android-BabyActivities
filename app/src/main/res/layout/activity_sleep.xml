@@ -62,6 +62,10 @@
                 android:text="start"
                 android:background="@android:color/holo_green_light"
                 android:clickable="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/title"/>
 
 
         </LinearLayout>
@@ -75,10 +79,13 @@
             android:layout_marginTop="20dp"
             android:padding="20dp"/>
 
-        <ListView
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:id="@+id/sleepLogs"></ListView>
+            android:layout_height="wrap_content"
+            >
+            <include android:id="@+id/today_logs" layout="@layout/log_view"/>
+            <include android:id="@+id/previous_logs" layout="@layout/log_view"/>
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -26,6 +26,7 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,10 +43,12 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.text.ParseException;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
@@ -75,7 +78,14 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
     BabyProfile babyProfile;
     String today;
     FeedingActivity feedingActivity;
-    LinkedList<String> allLogs;
+    List<ActivityLog> allLogs;
+    ActivityLog activityLog;
+    List<String> mLogs;
+    private LinearLayout layout;
+    List<String> todayLogs;
+    List<String> previousLogs;
+    private ArrayAdapter<String> today_arrayAdapter;
+    private ArrayAdapter<String> previoud_arrayAdapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -104,6 +114,10 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
 
         dbHelper = new DBHelper(this);
         babyProfile = new BabyProfile();
+        activityLog = new ActivityLog();
+
+        mLogs = new ArrayList<>();
+
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -121,20 +135,52 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         //display all logs
-        logList = (ListView) findViewById(R.id.today_list);
-        allLogs = new LinkedList<>();
+        //logList = (ListView) findViewById(R.id.today_list);
+        allLogs = new ArrayList<>();
         allLogs = dbHelper.getAllLog();
-        setLogView(allLogs);
-
+        if(allLogs != null) {
+            setLogView(allLogs);
+        }
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
     }
 
-    public void setLogView(LinkedList<String> allLogs){
+    public void setLogView(List<ActivityLog> logs){
+        String date;
+        String current = activityLog.getCurrentTime();
+        String currentdate = activityLog.splitDate(current);
+        ActivityLog log = new ActivityLog();
+        todayLogs = new ArrayList<>();
+        previousLogs = new ArrayList<>();
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, allLogs);
-        logList.setAdapter(arrayAdapter);
-        logList.setTextFilterEnabled(true);
+        //List view of today logs
+        layout = (LinearLayout) findViewById(R.id.today_logs);
+        TextView today = (TextView) layout.findViewById(R.id.date_view);
+        ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
+
+        //List view of previous days logs
+        layout = (LinearLayout) findViewById(R.id.previous_logs);
+        TextView previous = (TextView) layout.findViewById(R.id.date_view);
+        ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+
+        for(int i =0; i<logs.size(); i++) {
+            log = logs.get(i);
+            date = log.getLogDate();
+            if (date.equals(currentdate)) {
+                today.setText("Today Activites");
+                mLogs.add(log.getLog());
+            } else {
+                previous.setText("Previous Days Activities");
+                mLogs.add(log.getLog() + " on " + log.getLogDate());
+            }
+        }
+        today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
+        todayLog.setAdapter(today_arrayAdapter);
+        todayLog.setTextFilterEnabled(true);
+
+        previoud_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
+        previousLog.setAdapter(previoud_arrayAdapter);
+        previousLog.setTextFilterEnabled(true);
     }
 
     public String getAge(String birthday){

@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class DBHelper extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "BabyActivities";
 
     // Table Profile
@@ -82,6 +82,7 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String LOG_ID = "id";
     private static final String L_NAME = "name";
     private static final String LOG = "logs";
+    private static final String LOG_DATE = "logs_date";
 
 
     public DBHelper(Context context){
@@ -130,7 +131,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL (querry8);
 
         String querry9 = ("CREATE TABLE " + TABLE_LOG + "(" + LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                L_NAME + " TEXT, " + LOG + " TEXT, " +  " FOREIGN KEY (" + L_NAME + ") REFERENCES "
+                L_NAME + " TEXT, " + LOG + " TEXT, " +   LOG_DATE + " TEXT, " +" FOREIGN KEY (" + L_NAME + ") REFERENCES "
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry9);
     }
@@ -275,17 +276,17 @@ public class DBHelper extends SQLiteOpenHelper{
         return data;
     }
 
-    public void insetLog(String log, String name){
+    public void insetLog(ActivityLog activityLog){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(L_NAME, name);
-        values.put(LOG, log);
-
+        values.put(L_NAME, activityLog.getName());
+        values.put(LOG, activityLog.getLog());
+        values.put(LOG_DATE, activityLog.getLogDate());
         db.insert(TABLE_LOG, null, values);
         db.close();
     }
 
-    public LinkedList<String> getAllLog(){
+    public LinkedList<String> getLog(){
         LinkedList<String> logs = new LinkedList<>();
         ActivityLog activityLog = new ActivityLog();
         String query = "SELECT " + LOG + " FROM " + TABLE_LOG + " ORDER BY " + LOG_ID + " DESC";
@@ -297,6 +298,26 @@ public class DBHelper extends SQLiteOpenHelper{
                     String aLog = cursor.getString(0);
                     activityLog.setLog(aLog);
                     logs.addLast(aLog);
+                } while (cursor.moveToNext());
+            }
+        }
+        return logs;
+    }
+
+    public List<ActivityLog> getAllLog(){
+        List<ActivityLog> logs = new ArrayList<>();
+        ActivityLog activityLog = new ActivityLog();
+
+        String query = "SELECT * FROM " + TABLE_LOG + " ORDER BY " + LOG_DATE + " DESC";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                do {
+                    activityLog.setName(cursor.getString(1));
+                    activityLog.setLog(cursor.getString(2));
+                    activityLog.setLogDate(cursor.getString(3));
+                    logs.add(activityLog);
                 } while (cursor.moveToNext());
             }
         }

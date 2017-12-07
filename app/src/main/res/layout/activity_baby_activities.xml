@@ -148,13 +148,15 @@
                 android:textColor="@color/colorAccent"
                 android:background="#99ccff"
                 android:textAlignment="center"
-                android:gravity="center"/>
-            <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="250dp"
-                android:id="@+id/today_list"
-
-                ></ListView>
+                android:gravity="center"
+                android:id="@+id/title"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+                    <include android:id="@+id/today_logs" layout="@layout/log_view"/>
+                    <include android:id="@+id/previous_logs" layout="@layout/log_view"/>
+                </LinearLayout>
 
             </LinearLayout>
 

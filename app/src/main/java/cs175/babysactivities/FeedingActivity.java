@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -60,12 +61,25 @@ public class FeedingActivity extends AppCompatActivity{
     String name;
     ArrayList<ActivityData> dataList;
     private long stopTime;
-    LinkedList<String> mLogs;
+
     long continued = 0;
     boolean started_before = false;
     boolean just_started = false;
+
+    List<String> mLogs;
     ActivityLog activityLog;
-    LinkedList<String> allLogs;
+    List<ActivityLog> allLogs;
+    List<String> dates;
+    private String current;
+    private String logTime;
+    private String logDate;
+    private String timeString;
+    private String log;
+    private LinearLayout layout;
+    List<String> todayLogs;
+    List<String> previousLogs;
+    private ArrayAdapter<String> today_arrayAdapter;
+    private ArrayAdapter<String> previoud_arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +88,10 @@ public class FeedingActivity extends AppCompatActivity{
 
         data = new ActivityData();
         dataList = new ArrayList<>();
-        mLogs = new LinkedList<>();
-        allLogs = new LinkedList<>();
+        mLogs = new ArrayList<>();
+        allLogs = new ArrayList<>();
+        dates = new ArrayList<>();
+
         activityLog = new ActivityLog();
         dbHelper = new DBHelper(this);
         name = dbHelper.getBabyName();
@@ -86,18 +102,22 @@ public class FeedingActivity extends AppCompatActivity{
         quantityEdit = (EditText) findViewById(R.id.qantity_edit);
         leftButton = (Button) findViewById(R.id.switch_left);
         rightButton = (Button) findViewById(R.id.switch_right);
-        feedingLog = (ListView) findViewById(R.id.feeding_logs);
 
         nameView.setText(name);
-        LinkedList<String> logs = dbHelper.getAllLog();
-        for(int i =0; i <logs.size(); i++){
-            String t = logs.get(i);
-            if(t.startsWith("Right") || t.startsWith("Left") || t.startsWith("Bottle")){
-                allLogs.addLast(logs.get(i));
-            }
-        }
-        setLogView(allLogs);
+       /* List<ActivityLog> logs = dbHelper.getAllLog();
+        ActivityLog log = new ActivityLog();
 
+        for(int i =0; i <logs.size(); i++){
+            log = logs.get(i);
+            String t = log.getLog();
+            if(t.startsWith("Right") || t.startsWith("Left") || t.startsWith("Bottle")){
+                allLogs.add(log);
+            }
+        }*/
+       allLogs = dbHelper.getAllLog();
+       if(allLogs != null) {
+           setLogView(allLogs);
+       }
         setStartButton(bottleButton);
         setStartButton(leftButton);
         setStartButton(rightButton);
@@ -230,16 +250,25 @@ public class FeedingActivity extends AppCompatActivity{
 
 
     public void stopBottle(){
-        String current = getCurrentTime();
         String quan = quantityEdit.getText().toString();
         if (quan.isEmpty()) {
             data.setQuanity(0);
         } else data.setQuanity(Integer.parseInt(quan));
         data.setBottleTime(time);
-        String timeString = formatTimeView(time);
-        String bottleLog = "Bottle fed " + quan + " oz for " + timeString + " at " + current;
-        dbHelper.insetLog(bottleLog, name);
-        allLogs.addLast(bottleLog);
+        timeString = activityLog.formatTimeView(time);
+
+        current = activityLog.getCurrentTime();
+        logTime = activityLog.splitTime(current);
+        logDate = activityLog.splitDate(current);
+        log = "Bottle fed " + quan + " oz for " + timeString + " at " + logTime;
+
+        activityLog.setName(name);
+        activityLog.setLog(log);
+        activityLog.setTime(logTime);
+        activityLog.setLogDate(logDate);
+        dbHelper.insetLog(activityLog);
+
+        allLogs.add(activityLog);
         setLogView(allLogs);
         handler.removeCallbacks(runnable);
         time = 0;
@@ -248,25 +277,46 @@ public class FeedingActivity extends AppCompatActivity{
 
     public void stopLeft(){
 
-        String current = getCurrentTime();
         data.setLeftTime(time);
-        String timeString = formatTimeView(time);
-        String log = "Left fed for " + timeString + " at " + current;
-        dbHelper.insetLog(log, name);
-        allLogs.add(log);
+        timeString = activityLog.formatTimeView(time);
+
+        current = activityLog.getCurrentTime();
+        logTime = activityLog.splitTime(current);
+        logDate = activityLog.splitDate(current);
+        log = "Left fed for " + timeString + " at " + logTime;
+
+        activityLog.setName(name);
+        activityLog.setLog(log);
+        activityLog.setTime(logTime);
+        activityLog.setLogDate(logDate);
+        dbHelper.insetLog(activityLog);
+
+        allLogs.add(activityLog);
         setLogView(allLogs);
+
         handler.removeCallbacks(runnable);
         time = 0;
     }
 
     public void stopRight(){
-        String current = getCurrentTime();
+
         data.setRightTime(time);
-        String timeString = formatTimeView(time);
-        String log = "Right fed for " + timeString + " at " + current;
-        dbHelper.insetLog(log, name);
-        allLogs.addLast(log);
+        timeString = activityLog.formatTimeView(time);
+
+        current = activityLog.getCurrentTime();
+        logTime = activityLog.splitTime(current);
+        logDate = activityLog.splitDate(current);
+        log = "Right fed for " + timeString + " at " + logTime;
+
+        activityLog.setName(name);
+        activityLog.setLog(log);
+        activityLog.setTime(logTime);
+        activityLog.setLogDate(logDate);
+        dbHelper.insetLog(activityLog);
+
+        allLogs.add(activityLog);
         setLogView(allLogs);
+
         handler.removeCallbacks(runnable);
         time = 0;
     }
@@ -280,20 +330,50 @@ public class FeedingActivity extends AppCompatActivity{
         }
       handler.postDelayed(runnable, 0);
     }
-    public String getCurrentTime(){
-        String current = "";
-        DateTime dateTime = new DateTime();
-        current = dateTime.toString(DateTimeFormat.shortDateTime());
-        return current;
+
+    public void setLogView(List<ActivityLog> logs){
+        String date;
+        String type;
+        String current = activityLog.getCurrentTime();
+        String currentdate = activityLog.splitDate(current);
+
+        //List view of today logs
+        layout = (LinearLayout) findViewById(R.id.today_logs);
+        TextView today = (TextView) layout.findViewById(R.id.date_view);
+        ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
+
+        //List view of previous days logs
+        layout = (LinearLayout) findViewById(R.id.previous_logs);
+        TextView previous = (TextView) layout.findViewById(R.id.date_view);
+        ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+
+        ActivityLog log = new ActivityLog();
+        todayLogs = new ArrayList<>();
+        previousLogs = new ArrayList<>();
+
+        for(int i =0; i<logs.size(); i++){
+            log = logs.get(i);
+            type = logs.get(i).getLog();
+            if(type.startsWith("Right") || type.startsWith("Left") || type.startsWith("Bottle")){
+                date = log.getLogDate();
+                if (date.equals(currentdate)) {
+                    today.setText("Today Activites");
+                    todayLogs.add(log.getLog());
+                } else {
+                    previous.setText("Previous Days Activities");
+                    previousLogs.add(log.getLog() + " on " + log.getLogDate());
+                }
+            }
+        }
+        today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
+        todayLog.setAdapter(today_arrayAdapter);
+        todayLog.setTextFilterEnabled(true);
+
+        previoud_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
+        previousLog.setAdapter(previoud_arrayAdapter);
+        previousLog.setTextFilterEnabled(true);
     }
-    public void setLogView(LinkedList<String> mLogs){
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mLogs);
-        feedingLog.setAdapter(arrayAdapter);
-        feedingLog.setTextFilterEnabled(true);
-
-    }
-
+/*
     public String formatTimeView(long millis){
         String timeView = "";
         int seconds = (int) (millis / 1000);
@@ -324,11 +404,11 @@ public class FeedingActivity extends AppCompatActivity{
         }
         return timeView;
     }
-
+*/
     public Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            time = SystemClock.uptimeMillis() - start;
+            time = Math.abs(SystemClock.uptimeMillis() - start);
             setTime(time, timeView);
             handler.postDelayed(this, 0);
         }
