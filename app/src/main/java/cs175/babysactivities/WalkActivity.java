@@ -223,7 +223,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
 
         //List view of previous days logs
-        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
+        layout = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
 

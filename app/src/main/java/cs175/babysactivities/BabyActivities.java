@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,6 +16,7 @@ import android.hardware.SensorManager;
 import android.icu.util.DateInterval;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -155,9 +157,14 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
 
+        //get user location to get the weather
+        getLocation();
+    }
+
+    public void getLocation(){
         //implement weather
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        String provider = locationManager.getBestProvider(new Criteria(), false);
+        //String provider = locationManager.getBestProvider(new Criteria(), false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -168,13 +175,35 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        Location location = locationManager.getLastKnownLocation(provider);
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(final Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                DownloadTask task = new DownloadTask();
+                task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
+                        "&lon=" + String.valueOf(lng) + "&appid=6c41ae963d3fcf20c1d0a60873464867");
+            }
 
-        DownloadTask task = new DownloadTask();
-        task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
-                 "&lon=" + String.valueOf(lng) + "&appid=6c41ae963d3fcf20c1d0a60873464867");
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+        /*
+        Location location = locationManager.getLastKnownLocation(provider);
+
+
+
+*/
     }
 
     public void setLogView(List<ActivityLog> logs){
@@ -189,20 +218,23 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
-        today.setText("Today Activites");
+
         //List view of previous days logs
-        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
+        layout = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
-        previous.setText("Previous Days Activities");
+
 
         for(int i =0; i<logs.size(); i++) {
             log = logs.get(i);
             date = log.getLogDate();
             if (date.equals(currentdate)) {
                 todayLogs.add(log.getLog());
+                today.setText("Today Activites");
+
             } else {
                 previousLogs.add(log.getLog() + " on " + log.getLogDate());
+                previous.setText("Previous Days Activities");
             }
         }
         today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);

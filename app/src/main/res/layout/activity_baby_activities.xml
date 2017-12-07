@@ -85,7 +85,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="City"
                 android:textSize="40dp"
                 android:layout_marginRight="20dp"
                 android:id="@+id/city_name"
@@ -108,7 +107,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="C"
+                android:text="F"
                 android:textSize="40dp"
                 android:layout_gravity="center"
                 />
@@ -125,7 +124,6 @@
             android:layout_gravity="center"
             android:drawableLeft="@drawable/babyface"
             android:gravity="center"
-            android:text="Name"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="20dp" />
@@ -135,7 +133,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="5 months"
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="20dp"
@@ -154,7 +151,7 @@
             android:id="@+id/title"/>
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="400dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
