@@ -1,14 +1,17 @@
 package cs175.babysactivities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +28,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WalkActivity extends AppCompatActivity implements SensorEventListener{
+public class WalkActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener{
     DBHelper dbHelper;
     Handler handler;
 
@@ -67,6 +70,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     private int mCounterSteps = 0;
     private int currentSteps = 0;
     private int totalStep = 0;
+
+    boolean played = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +151,23 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         });
+        playMusic.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(played == false){
+            playMusic.setBackgroundColor(Color.RED);
+            playMusic.setText("stop music");
+            startService(new Intent(this, MyService.class));
+            played = true;
+        }else{
+            playMusic.setBackgroundColor(Color.BLUE);
+            playMusic.setText("play music");
+            stopService(new Intent(this, MyService.class));
+            played = false;
+        }
     }
 
     public void stopWalk(){
