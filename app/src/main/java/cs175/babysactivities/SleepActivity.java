@@ -54,6 +54,7 @@ public class SleepActivity extends AppCompatActivity {
     private ArrayAdapter<String> today_arrayAdapter;
     private ArrayAdapter<String> previoud_arrayAdapter;
     private LinearLayout layout;
+    private LinearLayout layout1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +127,7 @@ public class SleepActivity extends AppCompatActivity {
                     stopSleep();
                     dbHelper.removeStatus("sleep");
                     just_started = false;
+                    started_before = false;
                 }
 
             }
@@ -183,7 +185,7 @@ public class SleepActivity extends AppCompatActivity {
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
 
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
 

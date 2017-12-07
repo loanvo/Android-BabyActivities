@@ -82,6 +82,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
     ActivityLog activityLog;
     List<String> mLogs;
     private LinearLayout layout;
+    private LinearLayout layout1;
     List<String> todayLogs;
     List<String> previousLogs;
     private ArrayAdapter<String> today_arrayAdapter;
@@ -159,7 +160,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
         today.setText("Today Activites");
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
         previous.setText("Previous Days Activities");

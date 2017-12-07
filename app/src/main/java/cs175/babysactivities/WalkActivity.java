@@ -1,6 +1,11 @@
 package cs175.babysactivities;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -15,11 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WalkActivity extends AppCompatActivity {
+public class WalkActivity extends AppCompatActivity implements SensorEventListener{
     DBHelper dbHelper;
     Handler handler;
 
@@ -35,6 +41,7 @@ public class WalkActivity extends AppCompatActivity {
     FeedingActivity feedingActivity;
 
     private LinearLayout layout;
+    private LinearLayout layout1;
     List<String> todayLogs;
     List<String> previousLogs;
     private ArrayAdapter<String> today_arrayAdapter;
@@ -53,6 +60,14 @@ public class WalkActivity extends AppCompatActivity {
     private String current;
     private String log;
 
+    //Sensor's variable
+    SensorManager sensorManager;
+    Sensor mStepCounter;
+    private int mSteps = 0;
+    private int mCounterSteps = 0;
+    private int currentSteps = 0;
+    private int totalStep = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +75,10 @@ public class WalkActivity extends AppCompatActivity {
 
         dbHelper = new DBHelper(this);
         handler = new Handler();
+
+        //Initialize sensor
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
         playMusic = (Button) findViewById(R.id.music_button);
         nameView = (TextView) findViewById(R.id.name_view);
@@ -123,22 +142,22 @@ public class WalkActivity extends AppCompatActivity {
                     stopWalk();
                     dbHelper.removeStatus("walk");
                     just_started = false;
+                    started_before = false;
                 }
-
             }
         });
-
     }
 
     public void stopWalk(){
+        stepView.setText("0");
 
         data.setWalkTime(time);
         timeString = activityLog.formatTimeView(time);
-
+        String numberSteps = stepView.getText().toString();
         current = activityLog.getCurrentTime();
         logTime = activityLog.splitTime(current);
         logDate = activityLog.splitDate(current);
-        log = "Walked for " + timeString + " at " + logTime;
+        log = "Walked " + numberSteps + " steps in " + timeString + " at " + logTime;
 
         activityLog.setName(name);
         activityLog.setLog(log);
@@ -182,7 +201,7 @@ public class WalkActivity extends AppCompatActivity {
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
 
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout.findViewById(R.id.date_view);
         ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
 
@@ -214,5 +233,58 @@ public class WalkActivity extends AppCompatActivity {
         previousLog.setTextFilterEnabled(true);
     }
 
+    @Override
+    public void onResume() {
 
+        super.onResume();
+        // only register the listener if start button has not been click
+        Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        if(countSensor != null){
+            sensorManager.registerListener(this, countSensor, sensorManager.SENSOR_DELAY_UI);
+        } else {
+            Toast.makeText(this, "Sensor not found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+
+        if(started_before==false){
+            if(countSensor != null) {
+                sensorManager.unregisterListener(this,countSensor);
+            }else
+                Toast.makeText(this, "Sensor not found", Toast.LENGTH_SHORT).show();
+        }else{
+            sensorManager.registerListener(this,countSensor, sensorManager.SENSOR_DELAY_FASTEST);
+
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            if(just_started==true) {
+                if (mCounterSteps < 1) {
+                    // initial value
+                    mCounterSteps = (int) event.values[0];
+                }
+                // Calculate steps taken based on first counter value received.
+                currentSteps = (int) event.values[0];
+                dbHelper.insertWalk(name, currentSteps);
+                mSteps =  currentSteps - mCounterSteps;
+                stepView.setText(String.valueOf(mSteps));
+            }else if(started_before==true){
+                totalStep =(int) event.values[0] - dbHelper.getSteps();
+                stepView.setText(String.valueOf(totalStep));
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }

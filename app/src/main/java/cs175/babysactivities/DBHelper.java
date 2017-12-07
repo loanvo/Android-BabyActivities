@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class DBHelper extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "BabyActivities";
 
     // Table Profile
@@ -118,8 +118,8 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL (querry5);
 
         String querry6 = ("CREATE TABLE " + TABLE_WALK + "(" + W_NAME + " TEXT, " +
-                KEY_WALK_TIME + " TEXT, " + KEY_ORIGINAL_STEPS + " DOUBLE, " + KEY_CURRENT_STEPS + " DOUBLE, "
-                + KEY_STATUS+ " TEXT, " +  " FOREIGN KEY (" + W_NAME + ") REFERENCES "
+                KEY_WALK_TIME + " TEXT, " + KEY_ORIGINAL_STEPS + " INT, " + KEY_CURRENT_STEPS + " INT, "
+                + KEY_STATUS + " TEXT, " +  " FOREIGN KEY (" + W_NAME + ") REFERENCES "
                 + TABLE_PROFILE + "(" + KEY_NAME + "))");
         db.execSQL (querry6);
 
@@ -381,8 +381,31 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return list;
     }
+    public void insertWalk(String name, int steps){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
 
-    /*public void insertBreastFeedTime(ActivityData data, String name){
+        values.put(W_NAME, name);
+        values.put(KEY_ORIGINAL_STEPS, steps);
+
+        db.insert(TABLE_WALK, null, values);
+        db.close();
+    }
+
+    public int getSteps(){
+        int steps = 0;
+        String query = "SELECT " + KEY_ORIGINAL_STEPS  + " FROM " + TABLE_WALK;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                steps = (Integer.parseInt(cursor.getString(0)));
+            }
+        }
+        return steps;
+    }
+/*
+    public void insertBreastFeedTime(ActivityData data, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BR_NAME, name);

@@ -48,21 +48,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="Has been walked for "
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textColor="@android:color/black"
                 android:layout_marginLeft="10dp"/>
             <TextView
                 android:id="@+id/step_view"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:text="0"
-                android:textSize="30sp"
+                android:textSize="25sp"
                 android:textColor="@android:color/holo_blue_dark"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="steps"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textColor="@android:color/black"
                 android:layout_marginLeft="5dp"/>
         </LinearLayout>
