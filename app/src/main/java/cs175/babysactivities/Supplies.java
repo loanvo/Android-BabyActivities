@@ -7,6 +7,15 @@ package cs175.babysactivities;
 public class Supplies {
     private int diaper;
     private int formula;
+    private String  date;
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getDate() {
+        return date;
+    }
 
     public void setDiaper(int diaper){
         this.diaper = diaper;

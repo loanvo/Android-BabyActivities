@@ -82,6 +82,14 @@ public class FeedingActivity extends AppCompatActivity{
     private ArrayAdapter<String> today_arrayAdapter;
     private ArrayAdapter<String> previoud_arrayAdapter;
 
+    private boolean addedSupply = false;
+    private Supplies supplies;
+    private int leftFormula;
+    private String dateSupply;
+    private TextView formularView;
+    final static int POWDER_PER_OZ = 4;
+    private int quan;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,8 +101,10 @@ public class FeedingActivity extends AppCompatActivity{
         allLogs = new ArrayList<>();
         dates = new ArrayList<>();
 
+        supplies = new Supplies();
         activityLog = new ActivityLog();
         dbHelper = new DBHelper(this);
+
         name = dbHelper.getBabyName();
         handler = new Handler();
         timeView = (TextView) findViewById(R.id.feed_timer_view);
@@ -110,6 +120,11 @@ public class FeedingActivity extends AppCompatActivity{
        if(allLogs != null) {
            setLogView(allLogs);
        }
+
+        supplies = getLeftOver();
+        formularView = (TextView) findViewById(R.id.formula_view);
+        formularView.setText(String.valueOf(supplies.getFormula()));
+
         setStartButton(bottleButton);
         setStartButton(leftButton);
         setStartButton(rightButton);
@@ -158,6 +173,13 @@ public class FeedingActivity extends AppCompatActivity{
             public void onClick(View v) {
                 final int status = (Integer) v.getTag();
                 if(just_started == false){
+                    quan = Integer.parseInt(quantityEdit.getText().toString())*POWDER_PER_OZ;
+                    if (addedSupply == true){
+                        supplies = getLeftOver();
+                        leftFormula = supplies.getFormula();
+                        dbHelper.updateSupply(leftFormula - quan, supplies.getDiaper(), supplies.getDate());
+                        formularView.setText(String.valueOf(leftFormula-quan));
+                    }
                     leftButton.setClickable(false);
                     rightButton.setClickable(false);
                     setStopButton(bottleButton);
@@ -216,6 +238,14 @@ public class FeedingActivity extends AppCompatActivity{
             }
         });
 
+    }
+    public Supplies getLeftOver(){
+        //implement supply inventory
+        Supplies supplies = dbHelper.getSupplies();
+        if(supplies != null){
+            addedSupply = true;
+        }
+        return supplies;
     }
     public void setAllClickable(){
         bottleButton.setClickable(true);

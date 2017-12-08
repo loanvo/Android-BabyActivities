@@ -7,7 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_gravity="center">
+        >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -27,7 +27,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:text="oz "
+            android:text="grams"
             android:textColor="@android:color/black"
             android:textSize="20dp"
             android:layout_marginLeft="15dp"
@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_gravity="center">
+        >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -55,7 +55,8 @@
             android:hint="amount"
             android:gravity="center"
             android:id="@+id/diaper_edit"
-            android:background="@drawable/box"/>
+            android:background="@drawable/box"
+            android:layout_marginLeft="5dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="50dp"

@@ -339,6 +339,37 @@ public class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    public Supplies getSupplies(){
+        Supplies supplies = new Supplies();
+        String query = "SELECT * FROM " + TABLE_SUPPLY;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                supplies.setDiaper(Integer.parseInt(cursor.getString(0)));
+                supplies.setFormula(Integer.parseInt(cursor.getString(1)));
+                supplies.setDate(cursor.getString(2));
+            }
+        }
+        return supplies;
+    }
+
+    public void updateSupply(int formula, int diaper, String d){
+         DateTime date = new DateTime();
+         String dateTime = date.toString(DateTimeFormat.shortDateTime());
+         SQLiteDatabase db = this.getWritableDatabase();
+         String update = "UPDATE " + TABLE_SUPPLY + " SET " + KEY_FORMULA + " = " + formula
+                 + ", " + KEY_DIAPER + " = " + diaper + ", " + KEY_DATE + " = '" + dateTime
+                 + "' WHERE " + KEY_DATE + " = '" + d + "'";
+         db.execSQL(update);
+         /*ContentValues values = new ContentValues();
+         values.put(KEY_DIAPER, diaper);
+         values.put(KEY_FORMULA, formula);
+         values.put(KEY_DATE, dateTime);
+         db.update(TABLE_SUPPLY, values, null, null);  */
+
+    }
+
     public void insertDiaper(String type, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();

@@ -85,6 +85,11 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
     private ArrayAdapter<String> today_arrayAdapter;
     private ArrayAdapter<String> previoud_arrayAdapter;
 
+    boolean addedSupply = false;
+    Supplies supplies;
+    private int leftDiaper;
+    private int leftFormula;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -113,6 +118,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         dbHelper = new DBHelper(this);
         babyProfile = new BabyProfile();
         activityLog = new ActivityLog();
+        supplies = new Supplies();
 
         mLogs = new ArrayList<>();
 
@@ -136,6 +142,15 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         }
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
+
+        //implement supply inventory
+        supplies = dbHelper.getSupplies();
+        if(supplies != null){
+            addedSupply = true;
+            leftDiaper = supplies.getDiaper();
+            leftFormula = supplies.getDiaper();
+        }
+
     }
 
     public void setLogView(List<ActivityLog> logs){
@@ -207,10 +222,10 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
                     age = "is " + years + " years " + months + " months " + days + " days old";
                 }
             } catch (IllegalArgumentException e) {
-                age = "wrong format birthday";
+                age = "Wrong format birthday";
             }
         }else{
-            age = "not provide birthday";
+            age = "Create baby profile here";
         }
         return age;
     }
@@ -258,13 +273,17 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
                 dialog.dismiss();
             }
         });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
     public void saveProfile(String n, String d, double w, double h, double head){
        babyProfile = dbHelper.getBabyInfo();
-       /*if(n.equals(babyProfile.getName())){
-           dbHelper.removeBabyProfile(n);
-       }*/
+
        dbHelper.removeBabyProfile(babyProfile.getName());
        babyProfile.setName(n);
        babyProfile.setDOB(d);
@@ -320,8 +339,18 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             public void onClick(View v) {
                 formula = Integer.parseInt(formulaEdit.getText().toString());
                 diaper = Integer.parseInt(diaperEdit.getText().toString());
-
-                dbHelper.insertSupply(formula, diaper);
+                if(addedSupply == true){
+                    //dbHelper.removeSupply(supplies.getDate());
+                    dbHelper.updateSupply(formula+ leftFormula, diaper + leftDiaper, supplies.getDate());
+                }else {
+                    dbHelper.insertSupply(formula, diaper);
+                }
+                dialog.dismiss();
+            }
+        });
+        cancelButn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });

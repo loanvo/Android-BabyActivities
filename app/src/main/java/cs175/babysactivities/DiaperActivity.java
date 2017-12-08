@@ -41,6 +41,13 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayAdapter<String> previoud_arrayAdapter;
     private LinearLayout layout;
 
+    Supplies supplies;
+    boolean addedSupply = false;
+    private int leftDiaper;
+    private int leftFormula;
+    private String dateSupply;
+    private TextView diaperView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +56,8 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         dbHelper = new DBHelper(this);
         diaperLogs = new ArrayList<>();
         activityLog = new ActivityLog();
+        supplies = new Supplies();
+
         nameView = (TextView) findViewById(R.id.name_view);
         pooBox = (CheckBox) findViewById(R.id.poo);
         peeBox = (CheckBox) findViewById(R.id.pee);
@@ -63,6 +72,19 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         pooBox.setOnClickListener(this);
         peeBox.setOnClickListener(this);
         bothBox.setOnClickListener(this);
+        supplies = getLeftOver();
+        diaperView = (TextView) findViewById(R.id.diaper_view);
+        diaperView.setText(String.valueOf(supplies.getDiaper()));
+
+    }
+
+    public Supplies getLeftOver(){
+        //implement supply inventory
+        Supplies supplies = dbHelper.getSupplies();
+        if(supplies != null){
+            addedSupply = true;
+        }
+        return supplies;
     }
 
     @Override
@@ -72,6 +94,12 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                 if(pooBox.isChecked()){
                     dbHelper.insertDiaper("poo", name);
 
+                    if (addedSupply == true){
+                        supplies = getLeftOver();
+                        leftDiaper = supplies.getDiaper();
+                        dbHelper.updateSupply(supplies.getFormula(), leftDiaper-1, supplies.getDate());
+                        diaperView.setText(String.valueOf(leftDiaper-1));
+                    }
                     current = activityLog.getCurrentTime();
                     logTime = activityLog.splitTime(current);
                     logDate = activityLog.splitDate(current);
@@ -90,7 +118,14 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.pee:
                 if(peeBox.isChecked()){
                     dbHelper.insertDiaper("pee", name);
-
+                    if (addedSupply == true){
+                        supplies = getLeftOver();
+                        leftDiaper = supplies.getDiaper();
+                        dbHelper.updateSupply(supplies.getFormula(), leftDiaper-1, supplies.getDate());
+                        diaperView.setText(String.valueOf(leftDiaper-1));
+                    }else{
+                        diaperView.setText("N/A");
+                    }
                     current = activityLog.getCurrentTime();
                     logTime = activityLog.splitTime(current);
                     logDate = activityLog.splitDate(current);
@@ -109,7 +144,12 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.both:
                 if(bothBox.isChecked()){
                     dbHelper.insertDiaper("both", name);
-
+                    if (addedSupply == true){
+                        supplies = getLeftOver();
+                        leftDiaper = supplies.getDiaper();
+                        dbHelper.updateSupply(supplies.getFormula(), leftDiaper-1, supplies.getDate());
+                        diaperView.setText(String.valueOf(leftDiaper-1));
+                    }
                     current = activityLog.getCurrentTime();
                     logTime = activityLog.splitTime(current);
                     logDate = activityLog.splitDate(current);
