@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class BabyActivities extends AppCompatActivity implements View.OnClickListener {
-
     private TextView mTextMessage;
 
     private Button feedButton;
@@ -71,8 +70,6 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
     private TextView nameView;
     private TextView ageView;
     private ListView logList;
-
-
 
     DBHelper dbHelper;
     BabyProfile babyProfile;
@@ -139,10 +136,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         }
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
-
     }
-
-
 
     public void setLogView(List<ActivityLog> logs){
         String date;

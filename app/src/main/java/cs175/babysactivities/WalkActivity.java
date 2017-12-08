@@ -163,7 +163,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     }catch (Exception e){
                         warning.setVisibility(v.INVISIBLE);
                     }
-                    if(temp != 0 && temp <= 60){
+                    if(temp != 0 && temp <= 35){
                         warning.setVisibility(v.VISIBLE);
                         warning.setText("It's too cold outside, wear warm before you go!");
                     }else{
