@@ -12,6 +12,46 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+            <include android:id="@+id/walk_warning" layout="@layout/weather_view"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="40dp"
+                android:layout_marginRight="20dp"
+                android:id="@+id/city_name"
+                />
+            <TextView
+                android:id="@+id/temp_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/degrees"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:gravity="center"
+                android:text="N/A"
+                android:layout_gravity="center"
+                android:drawableLeft="@drawable/thermo"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F"
+                android:textSize="40dp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
         <TextView
             android:id="@+id/name_view"
             android:layout_width="wrap_content"
@@ -19,7 +59,6 @@
             android:layout_gravity="center"
             android:drawableLeft="@drawable/babyface"
             android:gravity="center"
-            android:text="Name"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="30dp" />
@@ -30,7 +69,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:drawableLeft="@drawable/timer"
             android:gravity="center"
             android:text="00:00:00"
             android:textAlignment="center"

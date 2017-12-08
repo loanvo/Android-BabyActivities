@@ -1,12 +1,17 @@
 package cs175.babysactivities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +19,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,10 +79,21 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     boolean played = false;
 
+    static TextView tempView;
+    static TextView cityName;
+    private LinearLayout mlayout;
+    private TextView warning;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walk);
+
+        tempView = (TextView) findViewById(R.id.temp_view);
+        cityName = (TextView) findViewById(R.id.city_name);
+        mlayout = (LinearLayout) findViewById(R.id.walk_warning);
+        warning = (TextView) mlayout.findViewById(R.id.warning);
+        getLocation();
 
         dbHelper = new DBHelper(this);
         handler = new Handler();
@@ -140,6 +157,18 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     data.setStart(String.valueOf(start));
                     dbHelper.insertStatus(data, name);
                     just_started = true;
+                    int temp =0;
+                    try{
+                        temp = Integer.parseInt(tempView.getText().toString());
+                    }catch (Exception e){
+                        warning.setVisibility(v.INVISIBLE);
+                    }
+                    if(temp != 0 && temp <= 60){
+                        warning.setVisibility(v.VISIBLE);
+                        warning.setText("It's too cold outside, wear warm before you go!");
+                    }else{
+                        warning.setVisibility(v.INVISIBLE);
+                    }
                 }else {
                     startWalk.setClickable(true);
                     startWalk.setBackgroundColor(Color.GREEN);
@@ -155,6 +184,51 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    public void getLocation(){
+        //implement weather
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //String provider = locationManager.getBestProvider(new Criteria(), false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(final Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                DownloadTask task = new DownloadTask();
+                task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
+                        "&lon=" + String.valueOf(lng) + "&appid=6c41ae963d3fcf20c1d0a60873464867");
+            }
+
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+        /*
+        Location location = locationManager.getLastKnownLocation(provider);
+
+
+
+*/
+    }
+
     @Override
     public void onClick(View v) {
         if(played == false){
@@ -163,7 +237,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
             startService(new Intent(this, MyService.class));
             played = true;
         }else{
-            playMusic.setBackgroundColor(Color.BLUE);
+            playMusic.setBackgroundColor(Color.parseColor("#33b5e5"));
             playMusic.setText("play music");
             stopService(new Intent(this, MyService.class));
             played = false;

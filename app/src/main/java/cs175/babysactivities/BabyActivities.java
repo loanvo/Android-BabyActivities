@@ -59,19 +59,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class BabyActivities extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
+public class BabyActivities extends AppCompatActivity implements View.OnClickListener {
 
     private TextView mTextMessage;
-
-    SensorManager sensorManager;
-    Sensor sensor;
-    float temperature = 0f;
-
-    //constant to calculate temperature references at keisan.casio.com
-    final static float CONSTANT1 = 5.257F;
-    final static float CONSTANT2 = 0.0065F;
-    final static float CONSTANT3 = 273.15F;
-
 
     private Button feedButton;
     private Button diaperButton;
@@ -82,8 +72,7 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
     private TextView ageView;
     private ListView logList;
 
-    static TextView tempView;
-    static TextView cityName;
+
 
     DBHelper dbHelper;
     BabyProfile babyProfile;
@@ -134,9 +123,6 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        tempView = (TextView) findViewById(R.id.temp_view);
-        cityName = (TextView) findViewById(R.id.city_name);
-
         babyProfile = dbHelper.getBabyInfo();
         nameView = (TextView) findViewById(R.id.name_view);
         nameView.setText(babyProfile.getName());
@@ -144,11 +130,8 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         String birthday = babyProfile.getDOB();
         ageView = (TextView) findViewById(R.id.age_view);
         ageView.setText(getAge(birthday));
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
 
         //display all logs
-        //logList = (ListView) findViewById(R.id.today_list);
         allLogs = new ArrayList<>();
         allLogs = dbHelper.getAllLog();
         if (allLogs != null) {
@@ -157,54 +140,9 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
 
-        //get user location to get the weather
-        getLocation();
     }
 
-    public void getLocation(){
-        //implement weather
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        //String provider = locationManager.getBestProvider(new Criteria(), false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(final Location location) {
-                double lat = location.getLatitude();
-                double lng = location.getLongitude();
-                DownloadTask task = new DownloadTask();
-                task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
-                        "&lon=" + String.valueOf(lng) + "&appid=6c41ae963d3fcf20c1d0a60873464867");
-            }
 
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            public void onProviderEnabled(String provider) {
-            }
-
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-
-        /*
-        Location location = locationManager.getLastKnownLocation(provider);
-
-
-
-*/
-    }
 
     public void setLogView(List<ActivityLog> logs){
         String date;
@@ -345,40 +283,6 @@ public class BabyActivities extends AppCompatActivity implements SensorEventList
        ageView.setText(getAge(d));
     }
 
-    @Override
-    public void onResume() {
-
-        super.onResume();
-        Sensor tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-        if(tempSensor != null){
-            sensorManager.registerListener(this, tempSensor, sensorManager.SENSOR_DELAY_NORMAL);
-        } else {
-            Toast.makeText(this, "Your phone doesn't support /n" + "temperature detect feature.", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_PRESSURE);{
-           float pressure;
-           float altitude;
-           float sealevel;
-           double temp;
-            pressure = (float) event.values[0];
-            sealevel = SensorManager.PRESSURE_STANDARD_ATMOSPHERE;
-            altitude = SensorManager.getAltitude(sealevel, pressure);
-            temp =  Double.valueOf((1/(1 - Math.pow(Math.E, Math.log(pressure/sealevel)/CONSTANT1)))
-                   *(CONSTANT2*altitude) - CONSTANT2*altitude - CONSTANT3).floatValue();
-            temperature = Math.round(temp * 10f) / 10f; //round up 1 decimal
-            //tempView.setText(Float.toString(temperature));
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
 
     public void startFeed(View v){
         Intent intent = new Intent(this, FeedingActivity.class);
