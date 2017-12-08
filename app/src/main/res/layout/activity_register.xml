@@ -72,48 +72,7 @@
             android:id="@+id/edit_birthday"
             />
     </LinearLayout>
-    <LinearLayout
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="20dp">
-        <TextView
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:text="Weight:"
-            android:textSize="20dp"
-            android:gravity="center"
-            android:textColor="@color/colorPrimaryDark" />
-        <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:textSize="20dp"
-            android:inputType="date"
-            android:hint="Baby's weight"
-            android:gravity="center"
-            android:id="@+id/edit_weight"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="20dp">
-        <TextView
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:text="Height:"
-            android:textSize="20dp"
-            android:gravity="center"
-            android:textColor="@color/colorPrimaryDark" />
-        <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:textSize="20dp"
-            android:inputType="date"
-            android:hint="Baby's height"
-            android:gravity="center"
-            android:id="@+id/edit_height"/>
-    </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -136,7 +95,7 @@
             android:layout_height="wrap_content"
             android:text="Powered By Loan Vo @ USA 2017"
             android:layout_marginLeft="112dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="100dp"
             />
 
 

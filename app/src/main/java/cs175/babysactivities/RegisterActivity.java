@@ -56,8 +56,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         editMode = false;
         nameEdit = (EditText) findViewById(R.id.edit_name);
         birthdayEdit = (EditText) findViewById(R.id.edit_birthday);
-        heightEdit = (EditText) findViewById(R.id.edit_height);
-        weightEdit = (EditText) findViewById(R.id.edit_weight);
+
         registerButton = (Button) findViewById(R.id.register_button);
         registerButton.setOnClickListener(this);
 

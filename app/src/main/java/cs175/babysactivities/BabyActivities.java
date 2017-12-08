@@ -237,9 +237,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         dialog.setTitle("Edit Baby Information");
         final EditText nameEdit = (EditText) dialog.findViewById(R.id.edit_name);
         final EditText birthdayEdit = (EditText) dialog.findViewById(R.id.edit_birthday);
-        final EditText heightEdit = (EditText) dialog.findViewById(R.id.edit_height);
-        final EditText weightEdit = (EditText) dialog.findViewById(R.id.edit_weight);
-        final EditText headEdit = (EditText) dialog.findViewById(R.id.edit_head);
+
         Button saveButton = (Button) dialog.findViewById(R.id.register_button);
         Button cancelButton = (Button) dialog.findViewById(R.id.cancel_button);
 
@@ -249,9 +247,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
 
         nameEdit.setText(babyProfile.getName());
         birthdayEdit.setText(babyProfile.getDOB());
-        weightEdit.setText(String.valueOf(babyProfile.getWeight()));
-        heightEdit.setText(String.valueOf(babyProfile.getHeight()));
-        headEdit.setText(String.valueOf(babyProfile.getHeight()));
+
 
         RegisterActivity activity = new RegisterActivity();
         activity.setCalendar(birthdayEdit, this);
@@ -266,9 +262,6 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             public void onClick(View v) {
                 name = nameEdit.getText().toString();
                 birth = birthdayEdit.getText().toString();
-                w = Double.parseDouble(weightEdit.getText().toString());
-                h = Double.parseDouble(heightEdit.getText().toString());
-                head = Double.parseDouble(headEdit.getText().toString());
                 saveProfile(name, birth, w, h, head);
                 dialog.dismiss();
             }

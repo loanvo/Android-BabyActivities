@@ -121,7 +121,8 @@
                 android:background="@android:color/holo_blue_light"
                 android:layout_marginRight="40dp"
                 android:id="@+id/music_button"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="10dp"
+                android:padding="5dp"/>
 
             <ImageView
                 android:layout_width="110dp"
