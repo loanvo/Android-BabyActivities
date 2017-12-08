@@ -38,7 +38,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     DBHelper dbHelper;
     Handler handler;
 
-    private Button playMusic;
+
     private TextView nameView;
     private TextView timeView;
     private TextView stepView;
@@ -77,7 +77,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     private int currentSteps = 0;
     private int totalStep = 0;
 
-    boolean played = false;
+   Button compass;
 
     static TextView tempView;
     static TextView cityName;
@@ -102,7 +102,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
-        playMusic = (Button) findViewById(R.id.music_button);
         nameView = (TextView) findViewById(R.id.name_view);
         timeView = (TextView) findViewById(R.id.walk_timer_view);
         stepView = (TextView) findViewById(R.id.step_view);
@@ -150,6 +149,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View v) {
                 if(just_started == false){
+                    stepView.setText("0");
                     startWalk.setBackgroundColor(Color.RED);
                     startWalk.setText("stop");
                     clockRunning();
@@ -180,8 +180,14 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         });
-        playMusic.setOnClickListener(this);
+        compass = (Button) findViewById(R.id.compass_button);
+        compass.setOnClickListener(this);
+    }
 
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, CompassActivity.class);
+        startActivity(intent);
     }
 
     public void getLocation(){
@@ -205,7 +211,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 double lng = location.getLongitude();
                 DownloadTask task = new DownloadTask();
                 task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
-                        "&lon=" + String.valueOf(lng) + "&appid=6c41ae963d3fcf20c1d0a60873464867");
+                        "&lon=" + String.valueOf(lng) + "&appid=ec1ccfd2f6689df719001f54c09e5dde");
             }
 
 
@@ -229,23 +235,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 */
     }
 
-    @Override
-    public void onClick(View v) {
-        if(played == false){
-            playMusic.setBackgroundColor(Color.RED);
-            playMusic.setText("stop music");
-            startService(new Intent(this, MyService.class));
-            played = true;
-        }else{
-            playMusic.setBackgroundColor(Color.parseColor("#33b5e5"));
-            playMusic.setText("play music");
-            stopService(new Intent(this, MyService.class));
-            played = false;
-        }
-    }
+
 
     public void stopWalk(){
-        stepView.setText("0");
 
         data.setWalkTime(time);
         timeString = activityLog.formatTimeView(time);

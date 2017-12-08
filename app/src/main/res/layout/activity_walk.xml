@@ -117,10 +117,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:text="Play music"
+                android:text="compass"
                 android:background="@android:color/holo_blue_light"
                 android:layout_marginRight="40dp"
-                android:id="@+id/music_button"
+                android:id="@+id/compass_button"
                 android:layout_marginLeft="10dp"
                 android:padding="5dp"/>
 
@@ -164,7 +164,7 @@
                     android:layout_height="match_parent"
                     >
                     <include android:id="@+id/today_logs" layout="@layout/log_view"
-                        android:layout_height="200dp"
+                        android:layout_height="150dp"
                         android:layout_width="wrap_content"/>
                 </LinearLayout>
                 <LinearLayout

@@ -58,7 +58,7 @@ public class DownloadTask extends AsyncTask<String, Void, String>{
             String temp = String.valueOf(tempIn);
             String city = jsonObject.getString("name");
             WalkActivity.tempView.setText(temp);
-            WalkActivity.cityName.setText(city);
+           // WalkActivity.cityName.setText(city);
 
 
         }catch (Exception e){

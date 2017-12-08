@@ -1,6 +1,7 @@
 package cs175.babysactivities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -59,7 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class BabyActivities extends AppCompatActivity implements View.OnClickListener {
+public class BabyActivities extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
     private TextView mTextMessage;
 
     private Button feedButton;
@@ -93,11 +94,14 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
     private TextView warning;
 
 
+    private static final int SENSOR_DELAY = 500 * 1000; // 500ms
+    private static final int FROM_RADS_TO_DEGS = -57;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_baby_activities);
+
 
         dbHelper = new DBHelper(this);
         babyProfile = new BabyProfile();
@@ -148,6 +152,17 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         }else{
             warning.setVisibility(warning.INVISIBLE);
         }
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 
