@@ -40,6 +40,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayAdapter<String> today_arrayAdapter;
     private ArrayAdapter<String> previoud_arrayAdapter;
     private LinearLayout layout;
+    private LinearLayout layout1;
 
     Supplies supplies;
     boolean addedSupply = false;
@@ -178,13 +179,13 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
-        today.setText("Today Activites");
+
 
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
-        TextView previous = (TextView) layout.findViewById(R.id.date_view);
-        ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
-        previous.setText("Previous Days Activities");
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
+        TextView previous = (TextView) layout1.findViewById(R.id.date_view);
+        ListView previousLog = (ListView) layout1.findViewById(R.id.log_view);
+
 
         todayLogs = new ArrayList<>();
         previousLogs = new ArrayList<>();
@@ -194,10 +195,12 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
             if(type.startsWith("Poo-poo") || type.startsWith("Pee-pee")){
                 date = log.getLogDate();
                 if (date.equals(currentdate)) {
-
+                    today.setVisibility(today.VISIBLE);
+                    today.setText("Today Activites");
                     todayLogs.add(log.getLog());
                 } else {
-
+                    previous.setVisibility(today.VISIBLE);
+                    previous.setText("Previous Days Activities");
                     previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 }
             }

@@ -140,13 +140,47 @@
                 android:text="start"/>
 
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-            <include android:id="@+id/today_logs" layout="@layout/log_view"/>
-            <include android:id="@+id/previous_logs" layout="@layout/log_view"/>
-        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="All Walking Logs:"
+            android:textSize="20dp"
+            android:textColor="@color/colorAccent"
+            android:background="#99ccff"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:id="@+id/title"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    >
+                    <include android:id="@+id/today_logs" layout="@layout/log_view"
+                        android:layout_height="200dp"
+                        android:layout_width="wrap_content"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    >
+                    <include android:id="@+id/previous_logs" layout="@layout/log_view"
+                        android:layout_height="200dp"
+                        android:layout_width="wrap_content"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+        </ScrollView>
 
 
     </LinearLayout>

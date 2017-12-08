@@ -358,13 +358,13 @@ public class FeedingActivity extends AppCompatActivity{
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
-        today.setText("Today Activites");
+
 
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
-        TextView previous = (TextView) layout.findViewById(R.id.date_view);
-        ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
-        previous.setText("Previous Days Activities");
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
+        TextView previous = (TextView) layout1.findViewById(R.id.date_view);
+        ListView previousLog = (ListView) layout1.findViewById(R.id.log_view);
+
 
         ActivityLog log = new ActivityLog();
         todayLogs = new ArrayList<>();
@@ -376,10 +376,12 @@ public class FeedingActivity extends AppCompatActivity{
             if(type.startsWith("Right") || type.startsWith("Left") || type.startsWith("Bottle")){
                 date = log.getLogDate();
                 if (date.equals(currentdate)) {
-
+                    today.setVisibility(today.VISIBLE);
+                    today.setText("Today Activites");
                     todayLogs.add(log.getLog());
                 } else {
-
+                    previous.setVisibility(previous.VISIBLE);
+                    previous.setText("Previous Days Activities");
                     previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 }
             }

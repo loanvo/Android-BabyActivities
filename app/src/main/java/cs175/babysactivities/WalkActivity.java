@@ -297,9 +297,9 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
 
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
-        TextView previous = (TextView) layout.findViewById(R.id.date_view);
-        ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
+        TextView previous = (TextView) layout1.findViewById(R.id.date_view);
+        ListView previousLog = (ListView) layout1.findViewById(R.id.log_view);
 
         todayLogs = new ArrayList<>();
         previousLogs = new ArrayList<>();
@@ -310,9 +310,11 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
             if (type.startsWith("Walked")) {
                 date = log.getLogDate();
                 if (date.equals(currentdate)) {
+                    today.setVisibility(today.VISIBLE);
                     today.setText("Today Activites");
                     todayLogs.add(log.getLog());
                 } else {
+                    previous.setVisibility(today.VISIBLE);
                     previous.setText("Previous Days Activities");
                     previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 }

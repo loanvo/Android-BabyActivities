@@ -89,26 +89,10 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
     Supplies supplies;
     private int leftDiaper;
     private int leftFormula;
+    private LinearLayout mlayout;
+    private TextView warning;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +105,6 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         supplies = new Supplies();
 
         mLogs = new ArrayList<>();
-
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         babyProfile = dbHelper.getBabyInfo();
         nameView = (TextView) findViewById(R.id.name_view);
@@ -150,6 +130,24 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             leftDiaper = supplies.getDiaper();
             leftFormula = supplies.getDiaper();
         }
+        mlayout = (LinearLayout) findViewById(R.id.notification);
+        warning = (TextView) mlayout.findViewById(R.id.warning);
+        if(leftDiaper != 0 && leftFormula !=0) {
+            if (leftDiaper < 10 && leftFormula < 80) {
+                warning.setVisibility(warning.VISIBLE);
+                warning.setText("Your supplies is running out");
+            } else if (leftFormula < 80) {
+                warning.setVisibility(warning.VISIBLE);
+                warning.setText("There is less than 80g for 20oz of bottle left");
+            }else if (leftDiaper < 10) {
+                warning.setVisibility(warning.VISIBLE);
+                warning.setText("There is less than 10 diapers left");
+            }else{
+                warning.setVisibility(warning.INVISIBLE);
+            }
+        }else{
+            warning.setVisibility(warning.INVISIBLE);
+        }
 
     }
 
@@ -167,19 +165,21 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
 
         //List view of previous days logs
-        layout = (LinearLayout) findViewById(R.id.previous_logs);
-        TextView previous = (TextView) layout.findViewById(R.id.date_view);
-        ListView previousLog = (ListView) layout.findViewById(R.id.log_view);
+        layout1 = (LinearLayout) findViewById(R.id.previous_logs);
+        TextView previous = (TextView) layout1.findViewById(R.id.date_view);
+        ListView previousLog = (ListView) layout1.findViewById(R.id.log_view);
 
 
         for(int i =0; i<logs.size(); i++) {
             log = logs.get(i);
             date = log.getLogDate();
             if (date.equals(currentdate)) {
+                today.setVisibility(today.VISIBLE);
                 todayLogs.add(log.getLog());
                 today.setText("Today Activites");
 
             } else {
+                previous.setVisibility(previous.VISIBLE);
                 previousLogs.add(log.getLog() + " on " + log.getLogDate());
                 previous.setText("Previous Days Activities");
             }
