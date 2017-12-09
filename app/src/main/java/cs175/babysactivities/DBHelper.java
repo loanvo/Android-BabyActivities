@@ -308,6 +308,7 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public List<ActivityLog> getAllLog(){
         List<ActivityLog> logs = new ArrayList<>();
+     //
         String query = "SELECT * FROM " + TABLE_LOG + " ORDER BY " + LOG_DATE + " ASC";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -352,9 +353,11 @@ public class DBHelper extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery(query, null);
         if(cursor != null){
             if(cursor.moveToFirst()){
-                supplies.setDiaper(Integer.parseInt(cursor.getString(0)));
-                supplies.setFormula(Integer.parseInt(cursor.getString(1)));
-                supplies.setDate(cursor.getString(2));
+                do {
+                    supplies.setDiaper(Integer.parseInt(cursor.getString(0)));
+                    supplies.setFormula(Integer.parseInt(cursor.getString(1)));
+                    supplies.setDate(cursor.getString(2));
+                } while (cursor.moveToNext());
             }
         }
         return supplies;

@@ -111,8 +111,12 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     if (addedSupply == true){
                         supplies = getLeftOver();
                         leftDiaper = supplies.getDiaper();
-                        dbHelper.updateSupply(supplies.getFormula(), leftDiaper-1, supplies.getDate());
-                        diaperView.setText(String.valueOf(leftDiaper-1));
+                        if (leftDiaper > 0) {
+                            dbHelper.updateSupply(supplies.getFormula(), leftDiaper - 1, supplies.getDate());
+                            diaperView.setText(String.valueOf(leftDiaper - 1));
+                        }else{
+                            diaperView.setText("0");
+                        }
                     }
                     current = activityLog.getCurrentTime();
                     logTime = activityLog.splitTime(current);
@@ -135,8 +139,12 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     if (addedSupply == true){
                         supplies = getLeftOver();
                         leftDiaper = supplies.getDiaper();
-                        dbHelper.updateSupply(supplies.getFormula(), leftDiaper-1, supplies.getDate());
-                        diaperView.setText(String.valueOf(leftDiaper-1));
+                        if (leftDiaper > 0) {
+                            dbHelper.updateSupply(supplies.getFormula(), leftDiaper - 1, supplies.getDate());
+                            diaperView.setText(String.valueOf(leftDiaper - 1));
+                        }else{
+                            diaperView.setText("0");
+                        }
                     }else{
                         diaperView.setText("N/A");
                     }
@@ -160,9 +168,12 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     dbHelper.insertDiaper("both", name);
                     if (addedSupply == true){
                         supplies = getLeftOver();
-                        leftDiaper = supplies.getDiaper();
-                        dbHelper.updateSupply(supplies.getFormula(), leftDiaper-1, supplies.getDate());
-                        diaperView.setText(String.valueOf(leftDiaper-1));
+                        if (leftDiaper > 0) {
+                            dbHelper.updateSupply(supplies.getFormula(), leftDiaper - 1, supplies.getDate());
+                            diaperView.setText(String.valueOf(leftDiaper - 1));
+                        }else{
+                            diaperView.setText("0");
+                        }
                     }
                     current = activityLog.getCurrentTime();
                     logTime = activityLog.splitTime(current);

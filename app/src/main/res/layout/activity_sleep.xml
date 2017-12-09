@@ -69,16 +69,33 @@
 
 
         </LinearLayout>
-        <Button
-            android:id="@+id/music_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="play music"
+            android:orientation="horizontal"
             android:layout_gravity="center"
-            android:background="@android:color/holo_blue_light"
-            android:layout_marginTop="20dp"
-            android:padding="20dp"/>
+            android:layout_marginBottom="10dp">
 
+            <Button
+                android:id="@+id/music_button"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:drawableLeft="@drawable/ic_play_arrow_black_24dp"
+                android:onClick="playMusic"
+                android:padding="10dp" />
+            <Button
+                android:id="@+id/stop_music"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/ic_stop_black_24dp"
+                android:padding="10dp"
+                android:onClick="stopMusic"/>
+
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"

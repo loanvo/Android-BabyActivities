@@ -89,7 +89,7 @@ public class FeedingActivity extends AppCompatActivity{
     private TextView formularView;
     final static int POWDER_PER_OZ = 4;
     private int quan;
-
+    private int amount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,7 +173,8 @@ public class FeedingActivity extends AppCompatActivity{
             public void onClick(View v) {
                 final int status = (Integer) v.getTag();
                 if(just_started == false){
-                    quan = Integer.parseInt(quantityEdit.getText().toString())*POWDER_PER_OZ;
+                    amount = Integer.parseInt(quantityEdit.getText().toString());
+                    quan = amount *POWDER_PER_OZ;
                     if (addedSupply == true){
                         supplies = getLeftOver();
                         leftFormula = supplies.getFormula();
@@ -268,17 +269,18 @@ public class FeedingActivity extends AppCompatActivity{
     }
 
     public void stopBottle(){
-        String quan = quantityEdit.getText().toString();
-        if (quan.isEmpty()) {
+        handler.removeCallbacks(runnable);
+        //String quan = quantityEdit.getText().toString();
+        if (amount == 0) {
             data.setQuanity(0);
-        } else data.setQuanity(Integer.parseInt(quan));
+        } else data.setQuanity(amount);
         data.setBottleTime(time);
         timeString = activityLog.formatTimeView(time);
 
         current = activityLog.getCurrentTime();
         logTime = activityLog.splitTime(current);
         logDate = activityLog.splitDate(current);
-        log = "Bottle fed " + quan + " oz for " + timeString + " at " + logTime;
+        log = "Bottle fed " + amount + " oz for " + timeString + " at " + logTime;
 
         activityLog.setName(name);
         activityLog.setLog(log);
@@ -288,12 +290,13 @@ public class FeedingActivity extends AppCompatActivity{
 
         allLogs.add(activityLog);
         setLogView(allLogs);
-        handler.removeCallbacks(runnable);
+
         time = 0;
+        setTime(time, timeView);
     }
 
     public void stopLeft(){
-
+        handler.removeCallbacks(runnable);
         data.setLeftTime(time);
         timeString = activityLog.formatTimeView(time);
 
@@ -311,12 +314,13 @@ public class FeedingActivity extends AppCompatActivity{
         allLogs.add(activityLog);
         setLogView(allLogs);
 
-        handler.removeCallbacks(runnable);
+
         time = 0;
+        setTime(time, timeView);
     }
 
     public void stopRight(){
-
+        handler.removeCallbacks(runnable);
         data.setRightTime(time);
         timeString = activityLog.formatTimeView(time);
 
@@ -333,9 +337,8 @@ public class FeedingActivity extends AppCompatActivity{
 
         allLogs.add(activityLog);
         setLogView(allLogs);
-
-        handler.removeCallbacks(runnable);
         time = 0;
+        setTime(time, timeView);
     }
 
 

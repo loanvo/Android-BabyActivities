@@ -129,10 +129,10 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
 
         //implement supply inventory
         supplies = dbHelper.getSupplies();
-        if(supplies != null){
+        if(supplies.getDate() != null){
             addedSupply = true;
             leftDiaper = supplies.getDiaper();
-            leftFormula = supplies.getDiaper();
+            leftFormula = supplies.getFormula();
         }
         mlayout = (LinearLayout) findViewById(R.id.notification);
         warning = (TextView) mlayout.findViewById(R.id.warning);
@@ -142,7 +142,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
                 warning.setText("Your supplies is running out");
             } else if (leftFormula < 80) {
                 warning.setVisibility(warning.VISIBLE);
-                warning.setText("There is less than 80g for 20oz of bottle left");
+                warning.setText("There is less than 20oz of bottle left");
             }else if (leftDiaper < 10) {
                 warning.setVisibility(warning.VISIBLE);
                 warning.setText("There is less than 10 diapers left");
@@ -219,10 +219,13 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
                 int months;
                 if (month == 1) {
                     months = days / 28;
+                    days = days%28;
                 } else if (month % 2 == 0) {
                     months = days / 30;
+                    days = days% 30;
                 } else {
                     months = days / 31;
+                    days = days %31;
                 }
                 int years = months / 12;
                 months = months % 12;
@@ -326,6 +329,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
     }
 
     public void addSupply(View view){
+
         final Dialog dialog = new Dialog(BabyActivities.this);
         dialog.setContentView(R.layout.new_supply);
         dialog.setTitle("Add Supply");
@@ -346,12 +350,28 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onClick(View v) {
                 formula = Integer.parseInt(formulaEdit.getText().toString());
+                Log.d("foe=======", String.valueOf(formula));
                 diaper = Integer.parseInt(diaperEdit.getText().toString());
                 if(addedSupply == true){
-                    //dbHelper.removeSupply(supplies.getDate());
-                    dbHelper.updateSupply(formula+ leftFormula, diaper + leftDiaper, supplies.getDate());
+
                 }else {
                     dbHelper.insertSupply(formula, diaper);
+                }
+                //dbHelper.removeSupply(supplies.getDate());
+                dbHelper.updateSupply(formula+ leftFormula, diaper + leftDiaper, supplies.getDate());
+                int updateDiaper = dbHelper.getSupplies().getDiaper();
+                int updateForm = dbHelper.getSupplies().getFormula();
+                if (updateDiaper < 10 && updateForm < 80) {
+                    warning.setVisibility(warning.VISIBLE);
+                    warning.setText("Your supplies is running out");
+                } else if (updateForm < 80) {
+                    warning.setVisibility(warning.VISIBLE);
+                    warning.setText("There is less than 20oz of bottle left");
+                }else if (updateDiaper < 10) {
+                    warning.setVisibility(warning.VISIBLE);
+                    warning.setText("There is less than 10 diapers left");
+                }else{
+                    warning.setVisibility(warning.INVISIBLE);
                 }
                 dialog.dismiss();
             }

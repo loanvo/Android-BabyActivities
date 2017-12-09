@@ -108,21 +108,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             babyProfile.setDOB("");
         }else babyProfile.setDOB(DOB);
 
-        String h = heightEdit.getText().toString();
-        if(h.isEmpty()){
-            babyProfile.setHeight(0.0);
-        }else {
-            height = Double.parseDouble(h);
-            babyProfile.setHeight(height);
-        }
-        String w = weightEdit.getText().toString();
-        if(w.isEmpty()){
-            babyProfile.setWeight(0.0);
-        }else {
-            weight = Double.parseDouble(w);
-            babyProfile.setWeight(weight);
-        }
-        babyProfile.setHeadsize(0.0);
         if(editMode){
             dbHelper.removeBabyProfile(name);
         }

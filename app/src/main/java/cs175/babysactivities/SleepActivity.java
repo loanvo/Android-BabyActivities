@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SleepActivity extends AppCompatActivity implements View.OnClickListener{
+public class SleepActivity extends AppCompatActivity{
     DBHelper dbHelper;
     ActivityData data;
     //create the feedingActivity for code reuseable
@@ -137,23 +137,14 @@ public class SleepActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
-        playMusic = (Button) findViewById(R.id.music_button);
-        playMusic.setOnClickListener(this);
+
     }
 
-    @Override
-    public void onClick(View v) {
-        if(played == false){
-            playMusic.setBackgroundColor(Color.RED);
-            playMusic.setText("stop music");
-            startService(new Intent(this, MyService.class));
-            played = true;
-        }else{
-            playMusic.setBackgroundColor(Color.parseColor("#33b5e5"));
-            playMusic.setText("play music");
-            stopService(new Intent(this, MyService.class));
-            played = false;
-        }
+    public void playMusic(View view){
+        startService(new Intent(this, MyService.class));
+    }
+    public void stopMusic(View view){
+        stopService(new Intent(this, MyService.class));
     }
 
     public void clockRunning(){
