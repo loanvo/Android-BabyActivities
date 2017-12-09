@@ -83,7 +83,9 @@
             android:exported="true"
             android:process=":anotherProc" />
 
-        <activity android:name=".CompassActivity"></activity>
+        <activity android:name=".CompassActivity"
+            android:label="Compass"
+            android:parentActivityName=".WalkActivity"></activity>
     </application>
 
 </manifest>

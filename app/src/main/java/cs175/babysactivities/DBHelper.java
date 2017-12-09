@@ -325,6 +325,12 @@ public class DBHelper extends SQLiteOpenHelper{
         return logs;
     }
 
+    public void removeLog(String log){
+        String query = "DELETE FROM " + TABLE_LOG + " WHERE " + LOG + " = " + '"' + log +'"';
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(query);
+    }
+
     public void insertSupply(int formula, int diaper){
         DateTime date = new DateTime();
         String dateTime = date.toString(DateTimeFormat.shortDateTime());
@@ -362,11 +368,6 @@ public class DBHelper extends SQLiteOpenHelper{
                  + ", " + KEY_DIAPER + " = " + diaper + ", " + KEY_DATE + " = '" + dateTime
                  + "' WHERE " + KEY_DATE + " = '" + d + "'";
          db.execSQL(update);
-         /*ContentValues values = new ContentValues();
-         values.put(KEY_DIAPER, diaper);
-         values.put(KEY_FORMULA, formula);
-         values.put(KEY_DATE, dateTime);
-         db.update(TABLE_SUPPLY, values, null, null);  */
 
     }
 

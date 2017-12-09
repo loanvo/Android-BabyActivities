@@ -1,15 +1,24 @@
 package cs175.babysactivities;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
@@ -18,7 +27,7 @@ import org.joda.time.format.DateTimeFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
+import static java.lang.Math.abs;
 public class DiaperActivity extends AppCompatActivity implements View.OnClickListener{
     private CheckBox pooBox;
     private CheckBox peeBox;
@@ -48,6 +57,10 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
     private int leftFormula;
     private String dateSupply;
     private TextView diaperView;
+
+    private GestureDetectorCompat mDetector;
+    private ListView todayLog;
+    private ListView previousLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +183,8 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void setLogView(List<ActivityLog> logs){
+        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+
         String date;
         String type;
         String current = activityLog.getCurrentTime();
@@ -178,13 +193,13 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         //List view of today logs
         layout = (LinearLayout) findViewById(R.id.today_logs);
         TextView today = (TextView) layout.findViewById(R.id.date_view);
-        ListView todayLog = (ListView) layout.findViewById(R.id.log_view);
+        todayLog = (ListView) layout.findViewById(R.id.log_view);
 
 
         //List view of previous days logs
         layout1 = (LinearLayout) findViewById(R.id.previous_logs);
         TextView previous = (TextView) layout1.findViewById(R.id.date_view);
-        ListView previousLog = (ListView) layout1.findViewById(R.id.log_view);
+        previousLog = (ListView) layout1.findViewById(R.id.log_view);
 
 
         todayLogs = new ArrayList<>();
@@ -205,12 +220,112 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
         }
-        today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
-        todayLog.setAdapter(today_arrayAdapter);
+
+        todayLog.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                mDetector.onTouchEvent(event);
+                return true;
+            }
+        });
+
+        ListAdapter<String> arrayAdapter = new ListAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
+        todayLog.setAdapter(arrayAdapter);
+        //today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
+
+        //todayLog.setAdapter(today_arrayAdapter);
         todayLog.setTextFilterEnabled(true);
 
-        previoud_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
-        previousLog.setAdapter(previoud_arrayAdapter);
+       // previoud_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
+       // previousLog.setAdapter(previoud_arrayAdapter);
+        ListAdapter<String> preAdapter = new ListAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
+        previousLog.setAdapter(preAdapter);
         previousLog.setTextFilterEnabled(true);
+
+
+    }
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_NONE = 0;
+        private static final int SWIPE_LEFT = 1;
+        private static final int SWIPE_RIGHT = 2;
+        ArrayList<View> views = new ArrayList<>();
+        @Override
+        public boolean onFling(MotionEvent ev1, MotionEvent ev2,
+                               float velocityX, float velocityY) {
+            views.add(findViewById(R.id.name_view));
+            int action = SWIPE_NONE;
+            if (abs(ev2.getY() - ev1.getY()) < 50) {
+                if ((ev1.getX() - ev2.getX()) > 300) {
+                    action = SWIPE_LEFT;
+                } else if ((ev2.getX() - ev1.getX()) > 300) {
+                    action = SWIPE_RIGHT;
+                }
+            }
+            int pos = todayLog.pointToPosition((int)ev1.getX(),(int)ev1.getY());
+            View child = todayLog.getChildAt(pos);
+            if (child != null) {
+                if(action == SWIPE_LEFT) {
+                    //child.findViewById(R.id.edit).setVisibility(View.VISIBLE);
+                    child.findViewById(R.id.trash).setVisibility(View.VISIBLE);
+
+                }
+                if(action == SWIPE_RIGHT) {
+                    //child.findViewById(R.id.edit).setVisibility(View.INVISIBLE);
+                    child.findViewById(R.id.trash).setVisibility(View.INVISIBLE);
+                }
+            }
+
+            return super.onFling(ev1, ev2, velocityX, velocityY);
+        }
+    }
+
+    public void deleteLog(View view){
+        RelativeLayout ParentRow = (RelativeLayout) view.getParent();
+        TextView text = (TextView)ParentRow.getChildAt(0);
+        String removeLog = text.getText().toString();
+        dbHelper.removeLog(removeLog);
+        List<ActivityLog> updateLog = dbHelper.getAllLog();
+        setLogView(updateLog);
+        Supplies mSupplies = new Supplies();
+        mSupplies = dbHelper.getSupplies();
+        int updateDiaper = mSupplies.getDiaper() + 1;
+        diaperView.setText(String.valueOf(updateDiaper));
+        dbHelper.updateSupply(mSupplies.getFormula(), updateDiaper, mSupplies.getDate());
+        ParentRow.refreshDrawableState();
+
+    }
+    class ListAdapter<T> extends ArrayAdapter<T> {
+
+        public ListAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+        }
+
+        public ListAdapter(Context context, int resource, List<T> items) {
+            super(context, resource, items);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater vi;
+                vi = LayoutInflater.from(getContext());
+                v = vi.inflate(R.layout.log_row, null);
+            }
+
+            T p = getItem(position);
+
+            if (p != null) {
+                TextView textView = (TextView) v.findViewById(R.id.item);
+
+                if (textView != null) {
+                    textView.setText(p.toString());
+                }
+            }
+            return v;
+        }
     }
 }
+
+

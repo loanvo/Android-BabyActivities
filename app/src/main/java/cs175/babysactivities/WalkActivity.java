@@ -59,8 +59,8 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     private String name;
     private long continued;
     private long time;
-    private boolean started_before =false;
-    private boolean just_started = false;
+    private boolean started_before;
+    private boolean just_started;
     private long start;
 
     private String timeString;
@@ -72,12 +72,13 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
     //Sensor's variable
     SensorManager sensorManager;
     Sensor mStepCounter;
-    private int mSteps = 0;
+    private int mSteps;
     private int mCounterSteps = 0;
     private int currentSteps = 0;
     private int totalStep = 0;
 
    Button compass;
+   boolean compassed;
 
     static TextView tempView;
     static TextView cityName;
@@ -106,7 +107,10 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         timeView = (TextView) findViewById(R.id.walk_timer_view);
         stepView = (TextView) findViewById(R.id.step_view);
         startWalk = (Button) findViewById(R.id.start_walk);
+        if(just_started == true || compassed == true){
+            stepView.setText(String.valueOf(mSteps));
 
+        }
         walkLogs = new ArrayList<>();
         activityLog = new ActivityLog();
         data = new ActivityData();
@@ -157,6 +161,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     data.setStart(String.valueOf(start));
                     dbHelper.insertStatus(data, name);
                     just_started = true;
+                    //started_before = true;
                     int temp =0;
                     try{
                         temp = Integer.parseInt(tempView.getText().toString());
@@ -186,6 +191,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onClick(View v) {
+        compassed = true;
         Intent intent = new Intent(this, CompassActivity.class);
         startActivity(intent);
     }
@@ -238,7 +244,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
 
     public void stopWalk(){
-
+        handler.removeCallbacks(runnable);
         data.setWalkTime(time);
         timeString = activityLog.formatTimeView(time);
         String numberSteps = stepView.getText().toString();
@@ -254,7 +260,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         walkLogs.add(activityLog);
         setLogView(walkLogs);
-        handler.removeCallbacks(runnable);
+
         time = 0;
     }
 
@@ -364,11 +370,13 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 // Calculate steps taken based on first counter value received.
                 currentSteps = (int) event.values[0];
                 dbHelper.insertWalk(name, currentSteps);
-                mSteps =  currentSteps - mCounterSteps;
-                stepView.setText(String.valueOf(mSteps));
+                    mSteps = currentSteps - mCounterSteps;
+                    stepView.setText(String.valueOf(mSteps));
             }else if(started_before==true){
                 totalStep =(int) event.values[0] - dbHelper.getSteps();
                 stepView.setText(String.valueOf(totalStep));
+            }else{
+                stepView.setText("0");
             }
         }
     }
