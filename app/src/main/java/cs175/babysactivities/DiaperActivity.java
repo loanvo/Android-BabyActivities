@@ -128,7 +128,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     activityLog.setLogDate(logDate);
                     dbHelper.insetLog(activityLog);
 
-                    diaperLogs.add(activityLog);
+                    diaperLogs=dbHelper.getAllLog();
                     setLogView(diaperLogs);
                     pooBox.setChecked(false);
                     }
@@ -158,7 +158,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     activityLog.setLogDate(logDate);
                     dbHelper.insetLog(activityLog);
 
-                    diaperLogs.add(activityLog);
+                    diaperLogs = dbHelper.getAllLog();
                     setLogView(diaperLogs);
                     peeBox.setChecked(false);
                 }
@@ -185,7 +185,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     activityLog.setLogDate(logDate);
                     dbHelper.insetLog(activityLog);
 
-                    diaperLogs.add(activityLog);
+                    diaperLogs = dbHelper.getAllLog();
                     setLogView(diaperLogs);
                     bothBox.setChecked(false);
                 }
