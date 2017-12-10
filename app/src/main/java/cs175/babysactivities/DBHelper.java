@@ -152,6 +152,7 @@ public class DBHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    // insert baby profile into database
     public void createProfile(BabyProfile babyProfile){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -166,14 +167,14 @@ public class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
-
-
+    // delete baby profile
     public void removeBabyProfile(String name){
         String selectQuery = "DELETE FROM " + TABLE_PROFILE + " WHERE " + KEY_NAME + " = " + "'" + name + "'";
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(selectQuery);
     }
 
+    //get baby info
     public BabyProfile getBabyInfo(){
         String selectQuery = "SELECT * FROM " + TABLE_PROFILE;
         BabyProfile babyProfile = new BabyProfile();
@@ -190,7 +191,7 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return babyProfile;
     }
-
+    //get Infor by name
     public BabyProfile getBabyInfoByName(String name){
         String selectQuery = "SELECT * FROM " + TABLE_PROFILE + " WHERE " + KEY_NAME + " = " + name;
         BabyProfile babyProfile = new BabyProfile();
@@ -208,6 +209,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return babyProfile;
     }
 
+    //get baby name
     public String getBabyName(){
         String name= "";
         String query = "SELECT " + KEY_NAME + " FROM " + TABLE_PROFILE;
@@ -220,7 +222,7 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return name;
     }
-
+    //insert data of bottle feed
     public void insertBottleFeedTime(ActivityData data, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -230,7 +232,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.insert(TABLE_BOTTLE_FEED, null, values);
         db.close();
     }
-
+    // insert status of each activity when it is started
     public void insertStatus(ActivityData data, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -243,7 +245,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.insert(TABLE_TRACKER, null, values);
         db.close();
     }
-
+    // update the status when it is stopped
     public void updateStatus(String startType, ActivityData data, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -256,12 +258,13 @@ public class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    //delete the status
     public void removeStatus(String type){
         String query = "DELETE FROM " + TABLE_TRACKER + " WHERE " + START_TYPE + " = " + '"' + type +'"';
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(query);
     }
-
+    //get status, also time
     public ActivityData getStatus(){
         ActivityData data = new ActivityData();
         String query = "SELECT " + START_TYPE + " , " + START_TIME + " FROM " + TABLE_TRACKER;
@@ -278,6 +281,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return data;
     }
 
+    //insert log into database
     public void insetLog(ActivityLog activityLog){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -288,24 +292,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
-    public LinkedList<String> getLog(){
-        LinkedList<String> logs = new LinkedList<>();
-        ActivityLog activityLog = new ActivityLog();
-        String query = "SELECT " + LOG + " FROM " + TABLE_LOG + " ORDER BY " + LOG_ID + " DESC";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if(cursor != null){
-            if(cursor.moveToFirst()){
-                do {
-                    String aLog = cursor.getString(0);
-                    activityLog.setLog(aLog);
-                    logs.addLast(aLog);
-                } while (cursor.moveToNext());
-            }
-        }
-        return logs;
-    }
-
+    // get all logs
     public List<ActivityLog> getAllLog(){
         List<ActivityLog> logs = new ArrayList<>();
      //
@@ -325,13 +312,13 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return logs;
     }
-
+    // delete log
     public void removeLog(String log){
         String query = "DELETE FROM " + TABLE_LOG + " WHERE " + LOG + " = " + '"' + log +'"';
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(query);
     }
-
+    //insert supply data
     public void insertSupply(int formula, int diaper){
         DateTime date = new DateTime();
         String dateTime = date.toString(DateTimeFormat.shortDateTime());
@@ -345,7 +332,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.insert(TABLE_SUPPLY, null, values);
         db.close();
     }
-
+    //get supply
     public Supplies getSupplies(){
         Supplies supplies = new Supplies();
         String query = "SELECT * FROM " + TABLE_SUPPLY;
@@ -362,7 +349,7 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return supplies;
     }
-
+    //update supply
     public void updateSupply(int formula, int diaper, String d){
          DateTime date = new DateTime();
          String dateTime = date.toString(DateTimeFormat.shortDateTime());
@@ -373,7 +360,7 @@ public class DBHelper extends SQLiteOpenHelper{
          db.execSQL(update);
 
     }
-
+    // insert type of using diaper
     public void insertDiaper(String type, String name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -385,6 +372,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    //get type of using diaper
     public List<String> getDiaper(){
         List<String> list = new ArrayList<>();
         String query = "SELECT " + KEY_TYPE + " FROM " + TABLE_DIAPER;
@@ -399,6 +387,7 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return list;
     }
+    //get bottle feed data
     public ArrayList<ActivityData> getBottleFeed(){
         ActivityData data = new ActivityData();
         ArrayList<ActivityData> list = new ArrayList<>();
@@ -416,6 +405,7 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return list;
     }
+    //insert walk data
     public void insertWalk(String name, int steps){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -426,7 +416,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.insert(TABLE_WALK, null, values);
         db.close();
     }
-
+    //get steps for walk activity
     public int getSteps(){
         int steps = 0;
         String query = "SELECT " + KEY_ORIGINAL_STEPS  + " FROM " + TABLE_WALK;
@@ -439,32 +429,4 @@ public class DBHelper extends SQLiteOpenHelper{
         }
         return steps;
     }
-/*
-    public void insertBreastFeedTime(ActivityData data, String name){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(BR_NAME, name);
-        values.put(KEY_LEFT_TIME, data.getLeftTime());
-        values.put(KEY_RIGHT_TIME, data.getRightTime());
-        db.insert(TABLE_BREAST_FEED, null, values);
-        db.close();
-    }
-
-    public ArrayList<ActivityData> getBreastFeed(){
-        ActivityData data = new ActivityData();
-        ArrayList<ActivityData> list = new ArrayList<>();
-        String query = "SELECT " + KEY_LEFT_TIME + " , " + KEY_RIGHT_TIME + " FROM " + TABLE_BREAST_FEED;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if(cursor != null){
-            if(cursor.moveToFirst()){
-                do {
-                    data.setLeftTime(Long.parseLong(cursor.getString(0)));
-                    data.setRightTime(Integer.parseInt(cursor.getString(1)));
-                    list.add(data);
-                } while (cursor.moveToNext());
-            }
-        }
-        return list;
-    }*/
 }

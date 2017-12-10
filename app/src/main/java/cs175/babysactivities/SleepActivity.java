@@ -15,6 +15,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -57,12 +65,15 @@ public class SleepActivity extends AppCompatActivity{
     private LinearLayout layout;
     private LinearLayout layout1;
 
-    private Button playMusic;
     boolean played = false;
+    LoginButton loginButton;
+    CallbackManager callbackManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_sleep);
 
         sleepButton = (Button) findViewById(R.id.start_sleep);
@@ -73,27 +84,39 @@ public class SleepActivity extends AppCompatActivity{
 
         handler = new Handler();
         dbHelper = new DBHelper(this);
+
         data = new ActivityData();
+
         feedingActivity = new FeedingActivity();
         activityLog = new ActivityLog();
         mLogs = new ArrayList<>();
 
-        sleepLogs = dbHelper.getAllLog();
+        // set baby name view
         name = dbHelper.getBabyName();
         nameView.setText(name);
+
+        //get all sleep activities
+        sleepLogs = dbHelper.getAllLog();
+
+        // catch exception when the log is empty
+        // get started activity and show them to user
         try {
             setLogView(sleepLogs);
         } catch (NullPointerException e){
             title.setText("You have no activity");
         }
+        // check to see which activity is going on
         data = dbHelper.getStatus();
+
+        //check if the start button has been pressed before when the user go to the other activity
         if(data.getStartType() != null) {
             if (data.getStartType().equals("sleep")) {
+                //get the time when the actitity is just starting
                 continued = Long.parseLong(data.getStart());
-                started_before = true;
-                //feedingActivity.setStopButton(sleepButton);
+                started_before = true;  //true when the activity has been press start button
                 sleepButton.setBackgroundColor(Color.RED);
                 sleepButton.setText("stop");
+                // set the running clock
                 clockRunning();
 
             }else{
@@ -112,7 +135,7 @@ public class SleepActivity extends AppCompatActivity{
             sleepButton.setText("start");
             sleepButton.setClickable(true);
         }
-
+        // implementation for the sleep button
         sleepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,6 +145,8 @@ public class SleepActivity extends AppCompatActivity{
                     clockRunning();
                     data.setStartType("sleep");
                     data.setStart(String.valueOf(start));
+                    // when it is pressed start the status is insert to the database
+                    // with the start time and the type of activity, sleep in this case
                     dbHelper.insertStatus(data, name);
                     just_started = true;
                 }else {
@@ -129,7 +154,7 @@ public class SleepActivity extends AppCompatActivity{
                     sleepButton.setBackgroundColor(Color.GREEN);
                     sleepButton.setText("start");
                     stopSleep();
-                    dbHelper.removeStatus("sleep");
+                    dbHelper.removeStatus("sleep"); // remove the status sleep when the button stop is pressed
                     just_started = false;
                     started_before = false;
                 }
@@ -137,9 +162,37 @@ public class SleepActivity extends AppCompatActivity{
             }
         });
 
+        //implementation for facebook login
+        loginButton = (LoginButton)findViewById(R.id.faceboo_login);
+        callbackManager = CallbackManager.Factory.create();
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(SleepActivity.this, "Login Succeed \n" + loginResult.getAccessToken().getUserId()
+                + "\n" + loginResult.getAccessToken().getToken(), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(SleepActivity.this, "Login Failed" , Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    //Implementation for music play on the background
+    // those 2 method will interact with MyService.java class to make
+    // the music keep playing even when the user close the apps
     public void playMusic(View view){
         startService(new Intent(this, MyService.class));
     }
@@ -147,35 +200,20 @@ public class SleepActivity extends AppCompatActivity{
         stopService(new Intent(this, MyService.class));
     }
 
+    // implemetation for the running clock to indicate how long the activity has been started
+    // by using Handler
     public void clockRunning(){
         if(started_before==true) {
+            // if the activity has been started and user went to the other actitvity and came back
+            // this will keep the clock runs continuously instead of start from 00:00:00
             start = continued;
         }else{
             start = SystemClock.uptimeMillis();
         }
         handler.postDelayed(runnable, 0);
     }
-
-    public void stopSleep(){
-
-        data.setSleepTime(time);
-        timeString = activityLog.formatTimeView(time);
-
-        current = activityLog.getCurrentTime();
-        logTime = activityLog.splitTime(current);
-        logDate = activityLog.splitDate(current);
-        log = "Slept for " + timeString + " at " + logTime;
-
-        activityLog.setName(name);
-        activityLog.setLog(log);
-        activityLog.setLogDate(logDate);
-        dbHelper.insetLog(activityLog);
-
-        sleepLogs.add(activityLog);
-        setLogView(sleepLogs);
-        handler.removeCallbacks(runnable);
-        time = 0;
-    }
+    // Runnable with Handler to keep clock running
+    // we will get the time of activity has been running here
     public Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -184,7 +222,32 @@ public class SleepActivity extends AppCompatActivity{
             handler.postDelayed(this, 0);
         }
     };
+    // implementation for stop button
+    public void stopSleep(){
+        //the gotten time from runnable will store into the object ActivityData data
+        data.setSleepTime(time);
+        // format the time with helper function formatTime() to a string to display to user
+        timeString = activityLog.formatTimeView(time);
 
+        current = activityLog.getCurrentTime();     //get current date and time with helper function getcurrent time in ActivityLog.java
+        logTime = activityLog.splitTime(current);   // get the  time only
+        logDate = activityLog.splitDate(current);   // get date only
+        log = "Slept for " + timeString + " at " + logTime; // format activity log for sleep activity
+
+        activityLog.setName(name);
+        activityLog.setLog(log);
+        activityLog.setLogDate(logDate);
+        dbHelper.insetLog(activityLog);     // insert the log detail into database
+
+        sleepLogs = dbHelper.getAllLog();   //query the logs from database
+        setLogView(sleepLogs);              // show the log to user
+        handler.removeCallbacks(runnable);  // stop the clock
+        time = 0;
+    }
+
+    // helper function to format how the log display to user in 2 lists
+    // one for current day and one for previous days
+    // the list will be invisible if there is no activity
     public void setLogView(List<ActivityLog> logs){
         String date;
         String type;

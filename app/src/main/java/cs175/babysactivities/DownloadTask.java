@@ -12,9 +12,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by mach on 12/7/17.
+ * Created by Loan Vo on 12/7/17.
  */
-
+// Obtain and retrieve data for weather from openweathermap.org API
 public class DownloadTask extends AsyncTask<String, Void, String>{
 
     @Override
@@ -58,7 +58,6 @@ public class DownloadTask extends AsyncTask<String, Void, String>{
             String temp = String.valueOf(tempIn);
             String city = jsonObject.getString("name");
             WalkActivity.tempView.setText(temp);
-           // WalkActivity.cityName.setText(city);
 
 
         }catch (Exception e){

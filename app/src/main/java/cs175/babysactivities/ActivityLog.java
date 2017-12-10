@@ -54,6 +54,7 @@ public class ActivityLog {
         return time;
     }
 
+    //format the time view for clock running
     public String formatTimeView(long millis){
         String timeView = "";
         int seconds = (int) (millis / 1000);
@@ -84,20 +85,21 @@ public class ActivityLog {
         }
         return timeView;
     }
-
+    //get current date and time
     public String getCurrentTime(){
         String current = "";
         DateTime dateTime = new DateTime();
         current = dateTime.toString(DateTimeFormat.shortDateTime());
         return current;
     }
+    // get the date from current date and time above
     public String splitDate(String current){
         String date ="";
         String [] parts = current.split(" ");
         date = parts[0];
         return date;
     }
-
+    //get the time
     public String splitTime(String current){
         String time="";
         String [] parts = current.split(" ");

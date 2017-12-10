@@ -79,6 +79,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
 
         name = dbHelper.getBabyName();
         nameView.setText(name);
+        //get started activity from database and show to user
         diaperLogs = dbHelper.getAllLog();
         if(diaperLogs != null) {
             setLogView(diaperLogs);
@@ -88,26 +89,30 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         bothBox.setOnClickListener(this);
         supplies = getLeftOver();
         diaperView = (TextView) findViewById(R.id.diaper_view);
+        //show the quantity of diaper that retrieve from the database
         diaperView.setText(String.valueOf(supplies.getDiaper()));
 
     }
 
+    // get the number of supplies has been left after uses
     public Supplies getLeftOver(){
         //implement supply inventory
         Supplies supplies = dbHelper.getSupplies();
         if(supplies != null){
-            addedSupply = true;
-        }
+            addedSupply = true;     //set true for addedSupply to know if user has been enter supply before or not
+        }                           // this will prevent the leftover to be negative
         return supplies;
     }
 
+    // implementation onclick for checkbox
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.poo:
                 if(pooBox.isChecked()){
+                    // insert type of using diaper
                     dbHelper.insertDiaper("poo", name);
-
+                    // using the boolean addedSupply to detect when need to do the subtraction
                     if (addedSupply == true){
                         supplies = getLeftOver();
                         leftDiaper = supplies.getDiaper();
@@ -115,6 +120,7 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                             dbHelper.updateSupply(supplies.getFormula(), leftDiaper - 1, supplies.getDate());
                             diaperView.setText(String.valueOf(leftDiaper - 1));
                         }else{
+                            // supply has not been added, no need to subtract, just set the leftover to 0
                             diaperView.setText("0");
                         }
                     }
@@ -126,8 +132,9 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                     activityLog.setName(name);
                     activityLog.setLog(log);
                     activityLog.setLogDate(logDate);
-                    dbHelper.insetLog(activityLog);
+                    dbHelper.insetLog(activityLog); //insert activity to database
 
+                    //get log from database to show to user
                     diaperLogs=dbHelper.getAllLog();
                     setLogView(diaperLogs);
                     pooBox.setChecked(false);
@@ -192,7 +199,8 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
-
+    // helper funcion to set up the view, need to check if the type is poo,pee or both
+    // to display in the diaper activity instead of display all (including sleep, feed..)
     public void setLogView(List<ActivityLog> logs){
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
@@ -238,23 +246,19 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
                 return true;
             }
         });
-
+        //ListAdapter is written below to customize the swipe left and right on each item in list
         ListAdapter<String> arrayAdapter = new ListAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
         todayLog.setAdapter(arrayAdapter);
-        //today_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todayLogs);
 
-        //todayLog.setAdapter(today_arrayAdapter);
         todayLog.setTextFilterEnabled(true);
 
-       // previoud_arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
-       // previousLog.setAdapter(previoud_arrayAdapter);
         ListAdapter<String> preAdapter = new ListAdapter<String>(this, android.R.layout.simple_list_item_1, previousLogs);
         previousLog.setAdapter(preAdapter);
         previousLog.setTextFilterEnabled(true);
 
 
     }
-
+    // Customize gesture to detect swipe left and right
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_NONE = 0;
         private static final int SWIPE_LEFT = 1;
@@ -276,12 +280,9 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
             View child = todayLog.getChildAt(pos);
             if (child != null) {
                 if(action == SWIPE_LEFT) {
-                    //child.findViewById(R.id.edit).setVisibility(View.VISIBLE);
                     child.findViewById(R.id.trash).setVisibility(View.VISIBLE);
-
                 }
                 if(action == SWIPE_RIGHT) {
-                    //child.findViewById(R.id.edit).setVisibility(View.INVISIBLE);
                     child.findViewById(R.id.trash).setVisibility(View.INVISIBLE);
                 }
             }
@@ -290,6 +291,8 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    // implementation for trash button that appear when swipe left
+    // it will be remove from the log also from the database if button is clicked
     public void deleteLog(View view){
         RelativeLayout ParentRow = (RelativeLayout) view.getParent();
         TextView text = (TextView)ParentRow.getChildAt(0);
@@ -305,8 +308,8 @@ public class DiaperActivity extends AppCompatActivity implements View.OnClickLis
         ParentRow.refreshDrawableState();
 
     }
+    //Custom list view for diaper log
     class ListAdapter<T> extends ArrayAdapter<T> {
-
         public ListAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
         }

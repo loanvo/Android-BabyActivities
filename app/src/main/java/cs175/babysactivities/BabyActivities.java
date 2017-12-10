@@ -60,7 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class BabyActivities extends AppCompatActivity implements View.OnClickListener, SensorEventListener {
+public class BabyActivities extends AppCompatActivity implements View.OnClickListener{
     private TextView mTextMessage;
 
     private Button feedButton;
@@ -93,15 +93,10 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
     private LinearLayout mlayout;
     private TextView warning;
 
-
-    private static final int SENSOR_DELAY = 500 * 1000; // 500ms
-    private static final int FROM_RADS_TO_DEGS = -57;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_baby_activities);
-
 
         dbHelper = new DBHelper(this);
         babyProfile = new BabyProfile();
@@ -127,7 +122,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         nameView.setOnClickListener(this);
         ageView.setOnClickListener(this);
 
-        //implement supply inventory
+        //get supply data from database
         supplies = dbHelper.getSupplies();
         if(supplies.getDate() != null){
             addedSupply = true;
@@ -135,6 +130,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             leftFormula = supplies.getFormula();
         }
         mlayout = (LinearLayout) findViewById(R.id.notification);
+        //show warning if inventory is going low, otherwise textview will be invisible
         warning = (TextView) mlayout.findViewById(R.id.warning);
         if(leftDiaper != 0 && leftFormula !=0) {
             if (leftDiaper < 10 && leftFormula < 80) {
@@ -152,17 +148,6 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         }else{
             warning.setVisibility(warning.INVISIBLE);
         }
-
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-
-    }
-
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 
@@ -207,7 +192,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         previousLog.setAdapter(previoud_arrayAdapter);
         previousLog.setTextFilterEnabled(true);
     }
-
+    //get age of baby base on the enter birthday
     public String getAge(String birthday){
         String age ="";
         if(birthday != null) {
@@ -248,6 +233,7 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         return age;
     }
 
+    //show dialog of baby information edit when the name textview is click
     @Override
     public void onClick(View v) {
         final Dialog dialog = new Dialog(BabyActivities.this);
@@ -262,10 +248,8 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
         Window window = dialog.getWindow();
         window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-
         nameEdit.setText(babyProfile.getName());
         birthdayEdit.setText(babyProfile.getDOB());
-
 
         RegisterActivity activity = new RegisterActivity();
         activity.setCalendar(birthdayEdit, this);
@@ -280,18 +264,19 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             public void onClick(View v) {
                 name = nameEdit.getText().toString();
                 birth = birthdayEdit.getText().toString();
-                saveProfile(name, birth, w, h, head);
-                dialog.dismiss();
+                saveProfile(name, birth, w, h, head);       //save info to database, original database included height, weight, and head-size
+                dialog.dismiss();                              // which temporary isn't implemeted, so are set to 0
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                dialog.dismiss();   //dialog is dimissed if cancel button is clicked
             }
         });
     }
 
+    // save profile to database
     public void saveProfile(String n, String d, double w, double h, double head){
        babyProfile = dbHelper.getBabyInfo();
 
@@ -307,27 +292,28 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
        ageView.setText(getAge(d));
     }
 
-
+    // button to go to feed activity
     public void startFeed(View v){
         Intent intent = new Intent(this, FeedingActivity.class);
         startActivity(intent);
     }
-
+    // button to go to diaper activity
     public void getDiaper(View v){
         Intent intent = new Intent(this, DiaperActivity.class);
         startActivity(intent);
     }
-
+    // button to go to sleep activity
     public void startSleep(View v){
         Intent intent = new Intent(this, SleepActivity.class);
         startActivity(intent);
     }
-
+    //button to go to walk activity
     public void startWalk(View v){
         Intent intent = new Intent(this, WalkActivity.class);
         startActivity(intent);
     }
 
+    // add supply button will show dialog of supply entering interface
     public void addSupply(View view){
 
         final Dialog dialog = new Dialog(BabyActivities.this);
@@ -350,14 +336,13 @@ public class BabyActivities extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onClick(View v) {
                 formula = Integer.parseInt(formulaEdit.getText().toString());
-                Log.d("foe=======", String.valueOf(formula));
                 diaper = Integer.parseInt(diaperEdit.getText().toString());
                 if(addedSupply == true){
 
                 }else {
                     dbHelper.insertSupply(formula, diaper);
                 }
-                //dbHelper.removeSupply(supplies.getDate());
+                // update supply with new values if there is any in there
                 dbHelper.updateSupply(formula+ leftFormula, diaper + leftDiaper, supplies.getDate());
                 int updateDiaper = dbHelper.getSupplies().getDiaper();
                 int updateForm = dbHelper.getSupplies().getFormula();

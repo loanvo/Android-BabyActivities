@@ -79,7 +79,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
    Button compass;
    boolean compassed;
-
+    // static variable, it can be implemented from the DownloadTask.java to set temp
     static TextView tempView;
     static TextView cityName;
     private LinearLayout mlayout;
@@ -99,7 +99,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         dbHelper = new DBHelper(this);
         handler = new Handler();
 
-        //Initialize sensor
+        //Initialize sensor of step counter
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
@@ -107,10 +107,12 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         timeView = (TextView) findViewById(R.id.walk_timer_view);
         stepView = (TextView) findViewById(R.id.step_view);
         startWalk = (Button) findViewById(R.id.start_walk);
+        //keep the step count show continuously even user go to the other activity
         if(just_started == true || compassed == true){
             stepView.setText(String.valueOf(mSteps));
 
         }
+
         walkLogs = new ArrayList<>();
         activityLog = new ActivityLog();
         data = new ActivityData();
@@ -119,9 +121,11 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         name = dbHelper.getBabyName();
         nameView.setText(name);
 
+        // get log from database and show to user
         walkLogs = dbHelper.getAllLog();
         setLogView(walkLogs);
 
+        //insert status into data base when started
         data = dbHelper.getStatus();
         if(data.getStartType() != null) {
             if (data.getStartType().equals("walk")) {
@@ -161,7 +165,6 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                     data.setStart(String.valueOf(start));
                     dbHelper.insertStatus(data, name);
                     just_started = true;
-                    //started_before = true;
                     int temp =0;
                     try{
                         temp = Integer.parseInt(tempView.getText().toString());
@@ -195,7 +198,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         Intent intent = new Intent(this, CompassActivity.class);
         startActivity(intent);
     }
-
+    // get user location to show temperature appropriately
     public void getLocation(){
         //implement weather
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -216,6 +219,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
                 DownloadTask task = new DownloadTask();
+                //using openweathermap.org API to obtain weather
                 task.execute("http://samples.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat)+
                         "&lon=" + String.valueOf(lng) + "&appid=ec1ccfd2f6689df719001f54c09e5dde");
             }
@@ -233,15 +237,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
-        /*
-        Location location = locationManager.getLastKnownLocation(provider);
-
-
-
-*/
     }
-
-
 
     public void stopWalk(){
         handler.removeCallbacks(runnable);
@@ -264,6 +260,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         time = 0;
     }
 
+    //set running clock
     public void clockRunning(){
         if(started_before==true) {
             start = continued;
@@ -282,6 +279,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
         }
     };
 
+    //set view for walk log
     public void setLogView(List<ActivityLog> logs) {
         String date;
         String type;
@@ -357,7 +355,7 @@ public class WalkActivity extends AppCompatActivity implements SensorEventListen
 
         }
     }
-
+    // count step when sensor detect changes
     @Override
     public void onSensorChanged(SensorEvent event) {
 

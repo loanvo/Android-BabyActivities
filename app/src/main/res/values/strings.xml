@@ -8,4 +8,5 @@
     <string name="title_activity_diaper">Diaper</string>
     <string name="title_activity_sleep">Sleep Activity</string>
     <string name="title_activity_walk">Walk Activity</string>
+    <string name="facebook_app_id">2193388120896234</string>
 </resources>
